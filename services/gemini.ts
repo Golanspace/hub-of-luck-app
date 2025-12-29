@@ -1,21 +1,20 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { NewsArticle } from "../types";
 
 export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[]> => {
   try {
-    // Check for API key safely
-    const apiKey = (window as any).process?.env?.API_KEY || '';
+    // Standard access to process.env.API_KEY
+    const apiKey = process.env.API_KEY;
     
     if (!apiKey) {
-      console.warn("Gemini Intelligence: No API Key detected. Using editorial fallback.");
+      console.warn("Gemini Intelligence: API_KEY is undefined. Falling back to editorial content.");
       return [];
     }
 
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `You are an editor for hubofluck.com. Provide 5 latest news updates for: "${query}". Format as: Headline | Category | Summary.`,
+      contents: `You are a high-end editor for hubofluck.com. Provide 5 latest authoritative news updates for: "${query}". Format each entry on a new line as: Headline | Category | Summary.`,
       config: {
         tools: [{ googleSearch: {} }],
       },
@@ -39,7 +38,10 @@ export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[
           author: "Hub Analytics",
           date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`,
-          sources: chunks.filter(c => c.web).map(c => ({ uri: c.web?.uri || '', title: c.web?.title || 'Source' }))
+          sources: chunks.filter(c => c.web).map(c => ({ 
+            uri: c.web?.uri || '', 
+            title: c.web?.title || 'External Source' 
+          }))
         };
       });
 

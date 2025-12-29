@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +7,12 @@
     
     <!-- Process Shim: This prevents the 'process is not defined' error -->
     <script>
-        window.process = { env: { NODE_ENV: 'production' } };
+        window.process = { 
+            env: { 
+                NODE_ENV: 'production',
+                API_KEY: '' 
+            } 
+        };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,16 +23,31 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; }
         #root:empty::before {
-            content: 'Synchronizing Intelligence Hub...';
+            content: 'SYNCHRONIZING HUB...';
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-weight: 800;
+            font-weight: 900;
             color: #10b981;
-            letter-spacing: 0.2em;
-            font-size: 12px;
+            letter-spacing: 0.4em;
+            font-size: 10px;
             text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .error-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            color: #ff4d4d;
+            padding: 40px;
+            font-family: monospace;
+            z-index: 9999;
+            overflow: auto;
         }
     </style>
 
@@ -50,13 +69,20 @@
     <script type="module" src="./index.tsx"></script>
     
     <script>
-        // Global error catcher to help you debug if it's still gray
+        // Global error catcher to help you debug
         window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('CRITICAL ERROR:', msg, 'at', lineNo, ':', columnNo);
             const root = document.getElementById('root');
-            if (root && root.innerHTML === '') {
-                root.innerHTML = '<div style="padding: 20px; color: red; font-family: monospace;">Hub of Luck failed to initialize. Error: ' + msg + '</div>';
-            }
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-overlay';
+            errorDiv.innerHTML = `
+                <h1 style="color: white; margin-bottom: 20px;">[BOOT_ERROR] HUB OF LUCK INITIALIZATION FAILED</h1>
+                <p><strong>Message:</strong> ${msg}</p>
+                <p><strong>Source:</strong> ${url}</p>
+                <p><strong>Line:</strong> ${lineNo}:${columnNo}</p>
+                <hr style="border: 1px solid #333; margin: 20px 0;">
+                <pre style="color: #888;">${error ? error.stack : 'No stack trace available'}</pre>
+            `;
+            document.body.appendChild(errorDiv);
             return false;
         };
     </script>
