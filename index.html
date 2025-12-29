@@ -6,8 +6,13 @@
     <title>Hub of Luck | Professional Gaming Intelligence</title>
     
     <script>
-        // Global environment shim to prevent 'process is not defined'
-        window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
+        // Critical Environment Shim
+        window.process = { 
+            env: { 
+                NODE_ENV: 'production', 
+                API_KEY: '' 
+            } 
+        };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +23,7 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; /* Professional Light Slate */
+            background-color: #f8fafc; 
             color: #0f172a;
             margin: 0; 
             padding: 0; 
@@ -26,7 +31,7 @@
         }
         #root { min-height: 100vh; }
         
-        /* Loading Spinner */
+        /* Persistent Loading Spinner */
         #root:empty::before {
             content: '';
             position: fixed;
@@ -43,16 +48,16 @@
         .debug-overlay {
             position: fixed;
             bottom: 20px; left: 20px; right: 20px;
-            background: #220000;
-            color: #ff5555;
-            padding: 20px;
-            border: 2px solid #ff0000;
+            background: #1a0000;
+            color: #ff6666;
+            padding: 24px;
+            border: 1px solid #ff3333;
             border-radius: 12px;
-            font-family: monospace;
-            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
             z-index: 10000;
             display: none;
-            box-shadow: 0 0 30px rgba(255,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
     </style>
 
@@ -74,24 +79,16 @@
     <div id="debug" class="debug-overlay"></div>
 
     <script>
-        // Global Error Tracker
+        // Global Error Catcher
         window.onerror = function(msg, url, line, col, error) {
             const debug = document.getElementById('debug');
             if (debug) {
                 debug.style.display = 'block';
-                debug.innerHTML = `<strong>SYSTEM ALERT:</strong><br>${msg}<br><br><small>Location: ${url}:${line}</small>`;
+                debug.innerHTML = `<strong>HUB BOOT ERROR:</strong><br>${msg}<br><br><small>${url}:${line}:${col}</small><br><br><button onclick="location.reload()" style="background:#ff3333;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer">FORCE REBOOT</button>`;
             }
             return false;
         };
-        
-        window.onunhandledrejection = function(event) {
-            const debug = document.getElementById('debug');
-            if (debug) {
-                debug.style.display = 'block';
-                debug.innerHTML = `<strong>ASYNC ALERT:</strong><br>${event.reason}`;
-            }
-        };
     </script>
-    <script type="module" src="./index.tsx?v=2.0.4"></script>
+    <script type="module" src="./index.tsx?v=3.0.0"></script>
 </body>
 </html>

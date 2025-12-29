@@ -3,18 +3,30 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
 /**
- * Hub of Luck | Entry Point
- * Unified to React 19 standards.
+ * Hub of Luck | Ultra-Stable Entry Point
+ * Ensures DOM readiness before React initialization.
  */
-const container = document.getElementById('root');
+const init = () => {
+  const container = document.getElementById('root');
+  if (!container) {
+    console.error("FATAL: Root container #root missing.");
+    return;
+  }
 
-if (container) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  try {
+    const root = createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (err) {
+    console.error("React Mounting Error:", err);
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
 } else {
-  console.error("FATAL: Root container #root missing in DOM.");
+  init();
 }
