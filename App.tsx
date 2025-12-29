@@ -9,42 +9,36 @@ import { Page, NewsArticle, BonusOffer } from './types.ts';
 import { fetchLatestGamingNews } from './services/gemini.ts';
 import { fetchWordPressPosts } from './services/wordpress.ts';
 
-// Simple Error Boundary Wrapper - Fixed TypeScript visibility errors
+// Error Boundary for UI Safety - Updated with explicit constructor to fix property access issues
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: any }
 > {
-  // Use class fields for state to avoid constructor-based visibility issues
-  state = { hasError: false, error: null };
+  // Explicitly define state and constructor to ensure property recognition
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
   static getDerivedStateFromError(error: any) {
     return { hasError: true, error };
   }
 
   render() {
-    // Destructure state and props for cleaner access and to satisfy strict checks
     const { hasError, error } = this.state;
-    const { children } = this.props;
-
     if (hasError) {
       return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-10 text-center">
+        <div className="min-h-screen bg-white flex items-center justify-center p-10 text-center">
           <div>
-            <h1 className="text-red-500 text-4xl font-black mb-4">UI ENGINE CRASH</h1>
-            <p className="text-gray-500 font-mono text-sm max-w-lg mx-auto">
-              {error?.toString()}
-            </p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-8 bg-emerald-600 px-6 py-3 rounded-xl font-bold"
-            >
-              REBOOT SYSTEM
-            </button>
+            <h1 className="text-red-600 text-3xl font-black mb-4">RECOVERY MODE</h1>
+            <p className="text-gray-500 font-mono text-xs max-w-lg mx-auto">{error?.toString()}</p>
+            <button onClick={() => window.location.reload()} className="mt-8 bg-emerald-600 text-white px-8 py-3 rounded-full font-bold">REFRESH HUB</button>
           </div>
         </div>
       );
     }
-    return children;
+    // Access children through this.props as defined in the generic parameter
+    return this.props.children;
   }
 }
 
@@ -68,6 +62,16 @@ const MOCK_BONUSES: BonusOffer[] = [
     logo: 'https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=100&h=100&auto=format&fit=crop',
     terms: 'Deposit required. NJ/PA/MI/WV only.',
     rating: 4.8
+  },
+  {
+    id: '3',
+    brand: 'DraftKings Pro',
+    offer: 'Bet $5, Get $250 Bonus',
+    promoCode: 'HUBSCRIPT',
+    link: '#',
+    logo: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=100&h=100&auto=format&fit=crop',
+    terms: 'Valid once. 21+ in legal states.',
+    rating: 4.7
   }
 ];
 
@@ -81,7 +85,7 @@ const AppContent: React.FC = () => {
     if (!containerRef.current) return;
     const updateHeight = () => {
       const h = containerRef.current?.scrollHeight || 0;
-      window.parent.postMessage({ type: 'hol-resize', height: h + 100 }, '*');
+      window.parent.postMessage({ type: 'hol-resize', height: h + 50 }, '*');
     };
     const observer = new ResizeObserver(updateHeight);
     observer.observe(containerRef.current);
@@ -94,16 +98,14 @@ const AppContent: React.FC = () => {
       try {
         setIsLoading(true);
         const [aiData, wpData] = await Promise.allSettled([
-          fetchLatestGamingNews("Online gambling legislation US 2024"),
+          fetchLatestGamingNews("US gambling news 2024"),
           fetchWordPressPosts()
         ]);
-        
         const validAi = aiData.status === 'fulfilled' ? aiData.value : [];
         const validWp = wpData.status === 'fulfilled' ? wpData.value : [];
-        
         setNews([...validWp, ...validAi]);
       } catch (err) {
-        console.error("Initialization Failed:", err);
+        console.error("Hub Error:", err);
       } finally {
         setIsLoading(false);
       }
@@ -111,26 +113,26 @@ const AppContent: React.FC = () => {
     initApp();
   }, []);
 
-  const renderContent = () => {
-    switch(currentPage) {
+  const renderPage = () => {
+    switch (currentPage) {
       case Page.Home:
         return (
-          <div className="animate-in fade-in duration-700">
+          <div className="animate-in fade-in duration-500">
             <Hero />
-            <section className="max-w-7xl mx-auto px-4 py-20">
+            <section className="max-w-7xl mx-auto px-4 py-16">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 <div className="lg:col-span-8">
-                  <div className="flex items-center justify-between mb-10">
-                    <div>
-                      <h2 className="text-3xl font-extrabold tracking-tight mb-2">INTELLIGENCE FEED</h2>
-                      <div className="h-1 w-20 bg-emerald-500"></div>
-                    </div>
+                  <div className="mb-12">
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-4">
+                      LATEST INTELLIGENCE
+                      <span className="h-[2px] flex-1 bg-gray-100"></span>
+                    </h2>
                   </div>
                   <NewsFeed news={news} isLoading={isLoading} />
                 </div>
-                <aside className="lg:col-span-4 space-y-12">
-                  <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-8 sticky top-28">
-                    <h3 className="text-xs font-black mb-8 uppercase tracking-[0.3em] text-emerald-500">Premium Offers</h3>
+                <aside className="lg:col-span-4">
+                  <div className="bg-white border border-gray-100 rounded-2xl p-8 sticky top-28 shadow-sm">
+                    <h3 className="text-xs font-black text-emerald-600 uppercase tracking-[0.2em] mb-8">Exclusive Offers</h3>
                     <div className="space-y-6">
                       {MOCK_BONUSES.map(bonus => (
                         <BonusCard key={bonus.id} bonus={bonus} />
@@ -143,20 +145,25 @@ const AppContent: React.FC = () => {
           </div>
         );
       case Page.News:
-        return <div className="max-w-6xl mx-auto px-4 py-20"><h1 className="text-5xl font-black mb-12 uppercase">LATEST NEWS</h1><NewsFeed news={news} isLoading={isLoading} fullWidth /></div>;
+        return <div className="max-w-5xl mx-auto px-4 py-16"><NewsFeed news={news} isLoading={isLoading} fullWidth /></div>;
       case Page.Bonuses:
-        return <div className="max-w-6xl mx-auto px-4 py-20"><h1 className="text-5xl font-black mb-12 uppercase">BONUSES</h1><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{MOCK_BONUSES.map(bonus => <BonusCard key={bonus.id} bonus={bonus} />)}</div></div>;
+        return (
+          <div className="max-w-7xl mx-auto px-4 py-16">
+            <h1 className="text-4xl font-black mb-12">PREMIUM BONUSES</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {MOCK_BONUSES.map(bonus => <BonusCard key={bonus.id} bonus={bonus} />)}
+            </div>
+          </div>
+        );
       default:
-        return <div className="max-w-6xl mx-auto px-4 py-20 h-[60vh] flex items-center justify-center"><h1 className="text-2xl font-bold opacity-20 uppercase tracking-widest">Section under maintenance</h1></div>;
+        return <div className="py-40 text-center text-gray-400 font-bold uppercase tracking-widest">In Development</div>;
     }
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen flex flex-col bg-[#050505] text-white">
+    <div ref={containerRef} className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
       <Header activePage={currentPage} setPage={setCurrentPage} />
-      <main className="flex-grow">
-        {renderContent()}
-      </main>
+      <main className="flex-grow">{renderPage()}</main>
       <Footer />
     </div>
   );

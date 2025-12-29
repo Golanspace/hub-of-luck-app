@@ -17,79 +17,62 @@ const Header: React.FC<HeaderProps> = ({ activePage, setPage }) => {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between relative z-50 bg-white">
+      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
         <div 
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setPage(Page.Home)}
         >
-          <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white text-2xl group-hover:bg-emerald-700 transition-colors">
+          <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-2xl group-hover:rotate-12 transition-transform shadow-lg shadow-emerald-100">
             ♣
           </div>
-          <span className="text-2xl font-bold tracking-tight text-gray-900">
+          <span className="text-2xl font-black tracking-tighter text-gray-900">
             Hub<span className="text-emerald-600">OfLuck</span>
           </span>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-10">
           {navItems.map((item) => (
             <button
               key={item.value}
               onClick={() => setPage(item.value)}
-              className={`text-sm font-semibold tracking-wide transition-colors hover:text-emerald-600 relative py-2 ${
-                activePage === item.value ? 'text-emerald-600' : 'text-gray-600'
+              className={`text-xs font-black tracking-[0.15em] transition-colors hover:text-emerald-600 relative py-2 uppercase ${
+                activePage === item.value ? 'text-emerald-600' : 'text-gray-400'
               }`}
             >
-              {item.label.toUpperCase()}
+              {item.label}
               {activePage === item.value && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600 rounded-full animate-in fade-in slide-in-from-left-2 duration-300"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-emerald-600 rounded-full"></span>
               )}
             </button>
           ))}
-          <button className="bg-emerald-600 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 active:scale-95">
-            JOIN NOW
+          <button className="bg-gray-900 text-white px-6 py-2.5 rounded-full text-xs font-black tracking-widest hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-100 active:scale-95 uppercase">
+            Join Elite
           </button>
         </nav>
 
         <button 
-          className="md:hidden text-gray-600 w-10 h-10 flex items-center justify-center focus:outline-none"
+          className="md:hidden text-gray-900 w-10 h-10 flex items-center justify-center focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
         >
-          <div className="relative w-6 h-5">
-            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-2 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out translate-y-4 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <div className="relative w-6 h-4">
+            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 translate-y-2 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+            <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 translate-y-4 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
           </div>
         </button>
       </div>
 
-      <div 
-        className={`md:hidden absolute left-0 right-0 bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out transform origin-top ${
-          isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-4 pointer-events-none'
-        }`}
-      >
-        <div className="py-6 px-4 space-y-2">
+      <div className={`md:hidden bg-white border-t border-gray-50 overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
+        <div className="p-6 space-y-4">
           {navItems.map((item) => (
             <button
               key={item.value}
-              onClick={() => {
-                setPage(item.value);
-                setIsOpen(false);
-              }}
-              className={`block w-full text-left py-3 px-4 rounded-lg font-semibold transition-colors ${
-                activePage === item.value 
-                  ? 'bg-emerald-50 text-emerald-700' 
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
+              onClick={() => { setPage(item.value); setIsOpen(false); }}
+              className="block w-full text-left py-2 font-black text-gray-900 uppercase tracking-widest text-sm"
             >
               {item.label}
             </button>
           ))}
-          <div className="pt-4 px-4">
-            <button className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-100 active:scale-[0.98] transition-transform">
-              JOIN NOW
-            </button>
-          </div>
         </div>
       </div>
     </header>

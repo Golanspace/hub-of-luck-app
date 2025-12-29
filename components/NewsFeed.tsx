@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { NewsArticle } from '../types.ts';
 
@@ -108,6 +109,28 @@ const NewsItem: React.FC<NewsItemProps> = ({ article, fontSize, allNews, onSwitc
             {isExpanded ? (
               <div className="prose prose-emerald max-w-none whitespace-pre-line text-gray-700 font-normal">
                 {article.content}
+                
+                {/* Mandatory grounding sources display section */}
+                {article.sources && article.sources.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-gray-100">
+                    <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Verification Sources</h5>
+                    <ul className="space-y-2">
+                      {article.sources.map((source, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <span className="text-emerald-600 font-bold">›</span>
+                          <a 
+                            href={source.uri} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs font-bold text-emerald-600 hover:text-emerald-800 underline decoration-emerald-200 underline-offset-4 transition-colors"
+                          >
+                            {source.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               article.excerpt
