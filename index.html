@@ -22,6 +22,7 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; overflow-x: hidden; }
+        #root { min-height: 100vh; }
         #root:empty::before {
             content: 'CONNECTING TO HUB...';
             position: fixed;
@@ -40,7 +41,7 @@
         .error-content { max-width: 600px; text-align: left; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333; }
     </style>
 
-    <!-- 2. UNIFIED IMPORT MAP (No Conflicts) -->
+    <!-- 2. CLEAN UNIFIED IMPORT MAP (Crucial for fixing Gray Screen) -->
     <script type="importmap">
 {
   "imports": {
@@ -60,6 +61,7 @@
     <!-- 3. SYSTEM ERROR MONITOR -->
     <script>
         window.onerror = function(msg, url, line, col, error) {
+            console.error('Hub Failure:', msg, error);
             const root = document.getElementById('root');
             if (root) {
                 root.innerHTML = `
@@ -67,7 +69,7 @@
                         <div class="error-content">
                             <h2 style="color: white; font-weight: 900; margin-bottom: 20px; font-family: sans-serif;">CRITICAL LOAD ERROR</h2>
                             <p style="color: #ef4444; font-weight: bold; font-size: 14px;">${msg}</p>
-                            <p style="color: #666; font-size: 11px; margin-top: 10px;">Check browser console for full stack trace.</p>
+                            <p style="color: #666; font-size: 11px; margin-top: 10px;">Line ${line} inside ${url}</p>
                             <button onclick="window.location.reload()" style="margin-top: 30px; background: #10b981; color: white; border: none; padding: 12px 24px; font-weight: 900; cursor: pointer; border-radius: 4px; font-size: 12px; letter-spacing: 1px;">RETRY CONNECTION</button>
                         </div>
                     </div>
