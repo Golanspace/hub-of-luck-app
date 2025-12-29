@@ -1,0 +1,35 @@
+
+<!-- 
+  HUB OF LUCK - ELEMENTOR DEPLOYMENT CODE
+  ========================================
+  1. Follow the GitHub steps provided in the chat.
+  2. Deploy to Vercel and get your "Deployment URL".
+  3. Replace YOUR_VERCEL_URL below with your link.
+-->
+
+<div id="hol-embed-wrapper" style="width: 100%; min-height: 800px; position: relative;">
+  <div id="hol-loader" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; z-index: 10; font-family: sans-serif;">
+    <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; animation: hol-spin 1s linear infinite;"></div>
+    <p style="margin-top: 20px; color: #10b981; font-weight: bold; letter-spacing: 1px; font-size: 14px;">LOADING HUB OF LUCK INTELLIGENCE...</p>
+  </div>
+
+  <iframe 
+    id="hol-app-frame"
+    src="YOUR_VERCEL_URL" 
+    style="width: 1px; min-width: 100%; height: 1000px; border: none; opacity: 0; transition: opacity 0.5s ease;"
+    onload="this.style.opacity='1'; document.getElementById('hol-loader').style.display='none';"
+  ></iframe>
+</div>
+
+<style>
+  @keyframes hol-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+
+<script>
+  // Message listener to handle auto-resize from within the iframe
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'hol-resize') {
+      document.getElementById('hol-app-frame').style.height = event.data.height + 'px';
+    }
+  }, false);
+</script>

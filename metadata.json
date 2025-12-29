@@ -1,0 +1,7 @@
+{
+  "name": "Hub of Luck - Premium Gaming Hub",
+  "description": "A sophisticated redesign of HubOfLuck.com, inspired by industry leaders, featuring real-time industry news via Gemini Google Search Grounding.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

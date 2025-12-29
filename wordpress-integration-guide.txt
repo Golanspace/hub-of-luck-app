@@ -1,0 +1,31 @@
+
+FOR YOUR WORDPRESS DEVELOPER:
+-----------------------------
+
+1. ENQUEUEING THE APP
+Add this to your functions.php to load the compiled React app:
+
+function hol_enqueue_react_app() {
+    wp_enqueue_script('hol-react-app', get_template_directory_uri() . '/dist/index.js', array(), '1.0', true);
+    wp_enqueue_style('hol-tailwind', get_template_directory_uri() . '/dist/index.css');
+    
+    // Pass the API key securely (or use a server-side proxy)
+    wp_localize_script('hol-react-app', 'holData', array(
+        'apiUrl' => esc_url_raw(rest_url()),
+        'nonce'  => wp_create_nonce('wp_rest')
+    ));
+}
+add_action('wp_enqueue_scripts', 'hol_enqueue_react_app');
+
+2. THEME TEMPLATE (index.php)
+Ensure your main theme file only contains:
+
+<?php get_header(); ?>
+<div id="root"></div>
+<?php get_footer(); ?>
+
+3. CORS SETTINGS
+If hosting the React app on a different domain (Headless), ensure your WordPress site allows CORS from that domain. Use the 'WP CORS' plugin or add headers via .htaccess.
+
+4. PERMALINKS
+Ensure Settings > Permalinks is set to 'Post Name'.
