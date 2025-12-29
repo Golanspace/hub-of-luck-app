@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { BonusOffer } from '../types';
+import { BonusOffer } from '../types.ts';
 
 interface BonusCardProps {
   bonus: BonusOffer;
@@ -9,7 +8,6 @@ interface BonusCardProps {
 const BonusCard: React.FC<BonusCardProps> = ({ bonus }) => {
   return (
     <div className="relative p-5 border border-gray-100 rounded-xl hover:border-emerald-500 transition-all bg-white group shadow-sm hover:shadow-2xl hover:shadow-emerald-900/10 overflow-hidden">
-      {/* Rating badge */}
       <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest">
         Top Choice
       </div>

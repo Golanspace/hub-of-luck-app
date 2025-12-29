@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Page } from '../types';
+import { Page } from '../types.ts';
 
 interface HeaderProps {
   activePage: Page;
@@ -31,7 +30,6 @@ const Header: React.FC<HeaderProps> = ({ activePage, setPage }) => {
           </span>
         </div>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <button
@@ -52,7 +50,6 @@ const Header: React.FC<HeaderProps> = ({ activePage, setPage }) => {
           </button>
         </nav>
 
-        {/* Mobile menu button */}
         <button 
           className="md:hidden text-gray-600 w-10 h-10 flex items-center justify-center focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
@@ -66,7 +63,6 @@ const Header: React.FC<HeaderProps> = ({ activePage, setPage }) => {
         </button>
       </div>
 
-      {/* Mobile Nav Overlay/Drawer */}
       <div 
         className={`md:hidden absolute left-0 right-0 bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out transform origin-top ${
           isOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-4 pointer-events-none'

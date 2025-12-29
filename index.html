@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub of Luck | Premium Gaming Intelligence</title>
     
-    <!-- 1. PROCESS SHIM -->
     <script>
         window.process = { 
             env: { 
@@ -21,65 +20,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; }
         #root { min-height: 100vh; }
         #root:empty::before {
-            content: 'CONNECTING TO HUB...';
+            content: 'INITIALIZING HUB...';
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-weight: 900;
             color: #10b981;
-            letter-spacing: 0.5em;
-            font-size: 11px;
-            text-transform: uppercase;
-            animation: pulse 2s infinite ease-in-out;
+            letter-spacing: 0.3em;
+            font-size: 12px;
+            animation: pulse 1.5s infinite;
         }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); } }
-        .error-screen { position: fixed; inset: 0; background: #0a0f0d; color: #ef4444; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; z-index: 9999; font-family: monospace; }
-        .error-content { max-width: 600px; text-align: left; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .critical-error { position: fixed; inset: 0; background: #050505; color: #ff4d4d; display: flex; align-items: center; justify-content: center; z-index: 9999; font-family: monospace; padding: 20px; }
     </style>
 
-    <!-- 2. CLEAN UNIFIED IMPORT MAP -->
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "@google/genai": "https://esm.sh/@google/genai@1.34.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react/": "https://esm.sh/react@19.0.0/",
+        "react-dom": "https://esm.sh/react-dom@19.0.0",
+        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "@google/genai": "https://esm.sh/@google/genai@1.34.0"
+      }
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
-    
-    <!-- 3. SYSTEM ERROR MONITOR -->
     <script>
-        window.onerror = function(msg, url, line, col, error) {
-            console.error('Hub Failure:', msg, error);
+        window.onerror = function(msg, url, line) {
             const root = document.getElementById('root');
-            if (root) {
-                root.innerHTML = `
-                    <div class="error-screen">
-                        <div class="error-content">
-                            <h2 style="color: white; font-weight: 900; margin-bottom: 20px; font-family: sans-serif;">CRITICAL LOAD ERROR</h2>
-                            <p style="color: #ef4444; font-weight: bold; font-size: 14px;">${msg}</p>
-                            <p style="color: #666; font-size: 11px; margin-top: 10px;">Line ${line} inside ${url}</p>
-                            <button onclick="window.location.reload()" style="margin-top: 30px; background: #10b981; color: white; border: none; padding: 12px 24px; font-weight: 900; cursor: pointer; border-radius: 4px; font-size: 12px; letter-spacing: 1px;">RETRY CONNECTION</button>
-                        </div>
-                    </div>
-                `;
-            }
-            return false;
+            if (root) root.innerHTML = `<div class="critical-error"><div><h1 style="color:white;margin-bottom:10px">SYSTEM ERROR</h1><p>${msg}</p><p style="font-size:10px;color:#666">${url}:${line}</p></div></div>`;
         };
     </script>
-
-    <!-- Versioning added to src to force refresh -->
-    <script type="module" src="./index.tsx?v=1.0.2"></script>
+    <script type="module" src="./index.tsx?v=1.0.5"></script>
 </body>
 </html>

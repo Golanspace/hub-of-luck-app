@@ -1,9 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
-import { NewsArticle } from "../types";
+import { NewsArticle } from "../types.ts";
 
 export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[]> => {
   try {
-    // Standard access to process.env.API_KEY
     const apiKey = process.env.API_KEY;
     
     if (!apiKey || apiKey === '') {

@@ -1,11 +1,9 @@
-
-import { NewsArticle } from "../types";
+import { NewsArticle } from "../types.ts";
 
 const WP_API_URL = "https://hubofluck.com/wp-json/wp/v2";
 
 export const fetchWordPressPosts = async (): Promise<NewsArticle[]> => {
   try {
-    // Attempt to fetch with a timeout to prevent hanging the app
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
