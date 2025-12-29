@@ -3,33 +3,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub of Luck | Your Premium Gaming Intelligence Hub</title>
+    
+    <!-- Process Shim: This prevents the 'process is not defined' error -->
+    <script>
+        window.process = { env: { NODE_ENV: 'production' } };
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; }
+        #root:empty::before {
+            content: 'Synchronizing Intelligence Hub...';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 800;
+            color: #10b981;
+            letter-spacing: 0.2em;
+            font-size: 12px;
+            text-transform: uppercase;
         }
     </style>
-<script type="importmap">
+
+    <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@1.34.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+    
+    <script>
+        // Global error catcher to help you debug if it's still gray
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('CRITICAL ERROR:', msg, 'at', lineNo, ':', columnNo);
+            const root = document.getElementById('root');
+            if (root && root.innerHTML === '') {
+                root.innerHTML = '<div style="padding: 20px; color: red; font-family: monospace;">Hub of Luck failed to initialize. Error: ' + msg + '</div>';
+            }
+            return false;
+        };
+    </script>
 </body>
 </html>
