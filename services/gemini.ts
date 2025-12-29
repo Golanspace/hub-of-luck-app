@@ -6,25 +6,23 @@ export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[
     // Standard access to process.env.API_KEY
     const apiKey = process.env.API_KEY;
     
-    if (!apiKey) {
-      console.warn("Gemini Intelligence: API_KEY is undefined. Falling back to editorial content.");
+    if (!apiKey || apiKey === '') {
+      console.warn("Hub Intelligence: API_KEY missing. App running in Editorial-only mode.");
       return [];
     }
 
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `You are a high-end editor for hubofluck.com. Provide 5 latest authoritative news updates for: "${query}". Format each entry on a new line as: Headline | Category | Summary.`,
+      contents: `Provide 5 news updates for: "${query}". Format: Headline | Category | Summary.`,
       config: {
         tools: [{ googleSearch: {} }],
       },
     });
 
     const text = response.text || "";
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     
-    // Parse response into articles
-    const articles: NewsArticle[] = text.split('\n')
+    return text.split('\n')
       .filter(line => line.includes('|'))
       .slice(0, 5)
       .map((line, idx) => {
@@ -32,22 +30,17 @@ export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[
         return {
           id: `ai-${idx}-${Date.now()}`,
           title: title || "Industry Insight",
-          excerpt: summary ? summary.substring(0, 160) + '...' : "Critical gaming industry update.",
-          content: summary || "Complete intelligence report pending...",
-          category: category || "Intelligence",
+          excerpt: summary ? summary.substring(0, 160) + '...' : "News update pending.",
+          content: summary || "",
+          category: category || "News",
           author: "Hub Analytics",
           date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`,
-          sources: chunks.filter(c => c.web).map(c => ({ 
-            uri: c.web?.uri || '', 
-            title: c.web?.title || 'External Source' 
-          }))
+          sources: []
         };
       });
-
-    return articles;
   } catch (error) {
-    console.error("Intelligence Fetch Error:", error);
+    console.error("Gemini Failure:", error);
     return [];
   }
 };

@@ -1,36 +1,50 @@
-
 <!-- 
-  HUB OF LUCK - ELEMENTOR DEPLOYMENT CODE
-  ========================================
-  Copy this into an Elementor "HTML" widget.
+  HUB OF LUCK - ELEMENTOR DEPLOYMENT CODE (v2)
+  ===========================================
+  1. Add an "HTML" widget in Elementor.
+  2. Paste this code.
+  3. Ensure the SRC URL below matches your Vercel PRODUCTION URL.
 -->
 
-<div id="hol-embed-wrapper" style="width: 100%; min-height: 800px; position: relative; background: #ffffff; overflow: hidden;">
-  <div id="hol-loader" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; z-index: 10; font-family: 'Inter', sans-serif;">
-    <div style="width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; animation: hol-spin 0.8s linear infinite;"></div>
-    <p style="margin-top: 24px; color: #10b981; font-weight: 800; letter-spacing: 3px; font-size: 11px; text-transform: uppercase;">SYNCHRONIZING INTELLIGENCE FEED</p>
+<div id="hol-container" style="width: 100%; position: relative; background: #ffffff; min-height: 600px;">
+  <!-- Loading State -->
+  <div id="hol-loader" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; z-index: 50; transition: opacity 0.5s ease;">
+    <div style="width: 30px; height: 30px; border: 2px solid #f3f3f3; border-top: 2px solid #10b981; border-radius: 50%; animation: hol-spin 1s linear infinite;"></div>
+    <p style="margin-top: 20px; color: #10b981; font-weight: 900; letter-spacing: 4px; font-size: 10px; text-transform: uppercase;">Syncing Hub Data</p>
   </div>
 
   <iframe 
-    id="hol-app-frame"
-    src="https://hub-of-luck-app1-1dukqds00-golans-projects-171c8acf.vercel.app" 
-    style="width: 1px; min-width: 100%; height: 1000px; border: none; opacity: 0; transition: opacity 0.8s ease;"
-    onload="this.style.opacity='1'; document.getElementById('hol-loader').style.display='none';"
+    id="hol-iframe"
+    src="https://hub-of-luck-app1-git-main-golans-projects-171c8acf.vercel.app" 
+    style="width: 100%; border: none; visibility: hidden; transition: visibility 0s 0.5s;"
+    scrolling="no"
   ></iframe>
 </div>
 
 <style>
-  @keyframes hol-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  @keyframes hol-spin { to { transform: rotate(360deg); } }
+  #hol-iframe { width: 1px; min-width: 100%; }
 </style>
 
 <script>
-  // Dynamic Resize Bridge: Receives height data from the React app and adjusts the iframe
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'hol-resize') {
-      const frame = document.getElementById('hol-app-frame');
-      if (frame) {
-        frame.style.height = event.data.height + 'px';
+  (function() {
+    const iframe = document.getElementById('hol-iframe');
+    const loader = document.getElementById('hol-loader');
+
+    // Hide loader when iframe signals it is ready
+    iframe.onload = function() {
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+        iframe.style.visibility = 'visible';
+      }, 500);
+    };
+
+    // Listen for resize messages from the React app
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'hol-resize') {
+        iframe.style.height = e.data.height + 'px';
       }
-    }
-  }, false);
+    }, false);
+  })();
 </script>
