@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub of Luck | Premium Gaming Intelligence</title>
     
-    <!-- 1. CRITICAL: Process Shim must be first to prevent "process is not defined" -->
+    <!-- 1. PROCESS SHIM -->
     <script>
         window.process = { 
             env: { 
@@ -23,7 +23,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; overflow-x: hidden; }
         #root:empty::before {
-            content: 'INITIALIZING HUB...';
+            content: 'CONNECTING TO HUB...';
             position: fixed;
             top: 50%;
             left: 50%;
@@ -40,7 +40,7 @@
         .error-content { max-width: 600px; text-align: left; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333; }
     </style>
 
-    <!-- 2. CLEANED IMPORT MAP: Removed trailing slash versions to prevent ESM conflicts -->
+    <!-- 2. UNIFIED IMPORT MAP (No Conflicts) -->
     <script type="importmap">
 {
   "imports": {
@@ -57,7 +57,7 @@
 <body>
     <div id="root"></div>
     
-    <!-- 3. AGGRESSIVE ERROR HANDLER -->
+    <!-- 3. SYSTEM ERROR MONITOR -->
     <script>
         window.onerror = function(msg, url, line, col, error) {
             const root = document.getElementById('root');
@@ -65,13 +65,10 @@
                 root.innerHTML = `
                     <div class="error-screen">
                         <div class="error-content">
-                            <h2 style="color: white; font-weight: 900; margin-bottom: 20px;">SYSTEM CRASH DETECTED</h2>
-                            <p style="color: #ef4444; font-weight: bold;">Error: ${msg}</p>
-                            <p style="color: #888; font-size: 12px; margin-top: 10px;">File: ${url}<br>Line: ${line}:${col}</p>
-                            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-                            <p style="color: #666; font-size: 11px;">Stack trace:</p>
-                            <pre style="color: #555; font-size: 10px; overflow: auto; max-height: 200px;">${error ? error.stack : 'No stack trace available'}</pre>
-                            <button onclick="window.location.reload()" style="margin-top: 30px; background: #10b981; color: white; border: none; padding: 10px 20px; font-weight: 900; cursor: pointer; border-radius: 4px;">RELOAD HUB</button>
+                            <h2 style="color: white; font-weight: 900; margin-bottom: 20px; font-family: sans-serif;">CRITICAL LOAD ERROR</h2>
+                            <p style="color: #ef4444; font-weight: bold; font-size: 14px;">${msg}</p>
+                            <p style="color: #666; font-size: 11px; margin-top: 10px;">Check browser console for full stack trace.</p>
+                            <button onclick="window.location.reload()" style="margin-top: 30px; background: #10b981; color: white; border: none; padding: 12px 24px; font-weight: 900; cursor: pointer; border-radius: 4px; font-size: 12px; letter-spacing: 1px;">RETRY CONNECTION</button>
                         </div>
                     </div>
                 `;
