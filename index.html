@@ -3,61 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hub of Luck | Professional Gaming Intelligence</title>
+    <title>Hub of Luck | Leading US Gaming Intelligence & Bonus Portal</title>
+    <meta name="description" content="The ultimate authority for Online Casino bonuses, Sports Betting insights, Lottery results, and Sweepstakes reviews in the US. Professional intelligence for the modern gamer.">
+    <meta name="keywords" content="online casino bonuses, sports betting odds, sweepstakes casino reviews, lottery results, real money gaming, gambling news">
     
     <script>
-        // Critical Environment Shim
-        window.process = { 
-            env: { 
-                NODE_ENV: 'production', 
-                API_KEY: '' 
-            } 
-        };
+        window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --brand-emerald: #10b981;
+            --brand-dark: #0f172a;
+        }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; 
+            background-color: #fcfcfd; 
             color: #0f172a;
-            margin: 0; 
-            padding: 0; 
+            margin: 0; padding: 0; 
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
+        .serif-title { font-family: 'Fraunces', serif; }
         #root { min-height: 100vh; }
         
-        /* Persistent Loading Spinner */
         #root:empty::before {
             content: '';
             position: fixed;
             top: 50%; left: 50%;
             width: 40px; height: 40px;
             margin: -20px 0 0 -20px;
-            border: 3px solid rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
             border-top-color: #10b981;
             border-radius: 50%;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .debug-overlay {
-            position: fixed;
-            bottom: 20px; left: 20px; right: 20px;
-            background: #1a0000;
-            color: #ff6666;
-            padding: 24px;
-            border: 1px solid #ff3333;
-            border-radius: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            z-index: 10000;
-            display: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .seo-text-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 
@@ -76,19 +67,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <div id="debug" class="debug-overlay"></div>
-
-    <script>
-        // Global Error Catcher
-        window.onerror = function(msg, url, line, col, error) {
-            const debug = document.getElementById('debug');
-            if (debug) {
-                debug.style.display = 'block';
-                debug.innerHTML = `<strong>HUB BOOT ERROR:</strong><br>${msg}<br><br><small>${url}:${line}:${col}</small><br><br><button onclick="location.reload()" style="background:#ff3333;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer">FORCE REBOOT</button>`;
-            }
-            return false;
-        };
-    </script>
-    <script type="module" src="./index.tsx?v=3.0.0"></script>
+    <script type="module" src="./index.tsx?v=4.0.5"></script>
 </body>
 </html>

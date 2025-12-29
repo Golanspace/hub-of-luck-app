@@ -1,31 +1,35 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { NewsArticle } from "../types.ts";
 
-export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[]> => {
+export const fetchLatestGamingNews = async (niche: string = "Gaming"): Promise<NewsArticle[]> => {
   try {
-    // API_KEY must be obtained exclusively from the environment variable process.env.API_KEY.
     if (!process.env.API_KEY) {
-      console.warn("Hub Intelligence: API_KEY missing. App running in Editorial-only mode.");
+      console.warn("Hub Intelligence: Offline Mode.");
       return [];
     }
 
-    // Must use new GoogleGenAI({ apiKey: process.env.API_KEY })
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
-    // Using gemini-3-flash-preview for basic news/text task as per guidelines
+    // SEO-Rich niche mapping to ensure the model focuses on high-intent keywords
+    const nicheContext = {
+      "Casinos": "online casino bonuses, real money slots, live dealer reviews",
+      "Sports": "sportsbook promo codes, NFL odds, legal sports betting states",
+      "Lottery": "Mega Millions jackpot, Powerball winning numbers, state lottery results",
+      "Sweepstakes": "social casino coins, sweeps prizes, free play bonuses",
+      "Gaming": "US gambling regulations, industry news, market growth 2024"
+    }[niche] || niche;
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Provide 5 news updates for: "${query}". Format: Headline | Category | Summary.`,
+      contents: `You are an SEO specialist for HubOfLuck.com. Provide 5 trending updates for: ${nicheContext}. 
+      Use journalistic tone. Format: Headline | Tagline | FullContent. 
+      Ensure headlines include high-volume keywords.`,
       config: {
         tools: [{ googleSearch: {} }],
       },
     });
 
-    // response.text is a getter, not a method
     const text = response.text || "";
-    
-    // Extract website URLs from groundingChunks as required by guidelines
     const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     const aiSources = groundingChunks
       .filter((chunk: any) => chunk && chunk.web)
@@ -36,16 +40,15 @@ export const fetchLatestGamingNews = async (query: string): Promise<NewsArticle[
     
     return text.split('\n')
       .filter(line => line.includes('|'))
-      .slice(0, 5)
       .map((line, idx) => {
-        const [title, category, summary] = line.split('|').map(s => s.trim());
+        const [title, tagline, content] = line.split('|').map(s => s.trim());
         return {
           id: `ai-${idx}-${Date.now()}`,
           title: title || "Industry Insight",
-          excerpt: summary ? summary.substring(0, 160) + '...' : "News update pending.",
-          content: summary || "",
-          category: category || "News",
-          author: "Hub Analytics",
+          excerpt: tagline || "Analyzing latest market shifts...",
+          content: content || tagline || "",
+          category: niche,
+          author: "Hub Analysis",
           date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`,
           sources: aiSources
