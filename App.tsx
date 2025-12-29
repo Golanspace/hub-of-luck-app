@@ -1,13 +1,12 @@
-
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import BonusCard from './components/BonusCard';
-import NewsFeed from './components/NewsFeed';
-import Footer from './components/Footer';
-import { Page, NewsArticle, BonusOffer } from './types';
-import { fetchLatestGamingNews } from './services/gemini';
-import { fetchWordPressPosts } from './services/wordpress';
+import Header from './components/Header.tsx';
+import Hero from './components/Hero.tsx';
+import BonusCard from './components/BonusCard.tsx';
+import NewsFeed from './components/NewsFeed.tsx';
+import Footer from './components/Footer.tsx';
+import { Page, NewsArticle, BonusOffer } from './types.ts';
+import { fetchLatestGamingNews } from './services/gemini.ts';
+import { fetchWordPressPosts } from './services/wordpress.ts';
 
 const MOCK_BONUSES: BonusOffer[] = [
   {
@@ -48,8 +47,6 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // --- START RESIZE BRIDGE ---
-  // This tells Elementor exactly how tall to make the iframe
   useLayoutEffect(() => {
     if (!containerRef.current) return;
 
@@ -63,7 +60,6 @@ const App: React.FC = () => {
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, [news, currentPage]);
-  // --- END RESIZE BRIDGE ---
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

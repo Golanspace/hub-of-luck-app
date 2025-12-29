@@ -41,7 +41,7 @@
         .error-content { max-width: 600px; text-align: left; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333; }
     </style>
 
-    <!-- 2. CLEAN UNIFIED IMPORT MAP (Crucial for fixing Gray Screen) -->
+    <!-- 2. CLEAN UNIFIED IMPORT MAP -->
     <script type="importmap">
 {
   "imports": {
@@ -79,6 +79,7 @@
         };
     </script>
 
-    <script type="module" src="./index.tsx"></script>
+    <!-- Versioning added to src to force refresh -->
+    <script type="module" src="./index.tsx?v=1.0.2"></script>
 </body>
 </html>

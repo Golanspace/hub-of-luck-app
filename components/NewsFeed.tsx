@@ -1,6 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
-import { NewsArticle } from '../types';
+import { NewsArticle } from '../types.ts';
 
 type FontSize = 'standard' | 'readable' | 'extra';
 
