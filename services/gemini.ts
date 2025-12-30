@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { NewsArticle } from "../types.ts";
 
@@ -8,7 +7,15 @@ export interface IntelligenceResponse {
   functionCalls?: any[];
 }
 
-// Cloudways tool definitions for Gemini
+// Safer API Key retrieval
+const getApiKey = () => {
+    try {
+        return process?.env?.API_KEY || '';
+    } catch (e) {
+        return '';
+    }
+};
+
 const cloudwaysTools: FunctionDeclaration[] = [
   {
     name: "purge_cache",
@@ -36,14 +43,14 @@ const cloudwaysTools: FunctionDeclaration[] = [
 
 export const consultIntelligence = async (query: string): Promise<IntelligenceResponse> => {
   try {
-    if (!process.env.API_KEY) return { text: "Offline.", webLinks: [] };
+    const apiKey = getApiKey();
+    if (!apiKey) return { text: "AI Consultant is currently offline. Please check back later.", webLinks: [] };
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `You are the Hub of Luck System Architect. 
-      You can manage Cloudways hosting and provide industry intelligence.
-      If the user asks for server tasks, use the provided tools.
+      You provide industry intelligence.
       User: ${query}`,
       config: {
         tools: [{ googleSearch: {} }, { functionDeclarations: cloudwaysTools }],
@@ -63,34 +70,40 @@ export const consultIntelligence = async (query: string): Promise<IntelligenceRe
     return { text, webLinks, functionCalls };
   } catch (error) {
     console.error("Consultation error:", error);
-    return { text: "The intelligence hub is busy.", webLinks: [] };
+    return { text: "The intelligence hub is currently busy. Please try again in a few minutes.", webLinks: [] };
   }
 };
 
 export const fetchLatestGamingNews = async (niche: string = "Gaming"): Promise<NewsArticle[]> => {
   try {
-    if (!process.env.API_KEY) return [];
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = getApiKey();
+    if (!apiKey) return [];
+    
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Provide 5 trending updates for: ${niche}. Format: Headline | Tagline | FullContent.`,
+      contents: `Provide 5 trending updates for: ${niche}. Format each line as: Headline | Tagline | FullContent.`,
       config: { tools: [{ googleSearch: {} }] },
     });
+    
     const text = response.text || "";
     return text.split('\n')
       .filter(line => line.includes('|'))
       .map((line, idx) => {
-        const [title, tagline, content] = line.split('|').map(s => s.trim());
+        const parts = line.split('|').map(s => s.trim());
         return {
           id: `ai-${idx}-${Date.now()}`,
-          title: title || "Insight",
-          excerpt: tagline || "Analysis...",
-          content: content || tagline || "",
+          title: parts[0] || "Insight",
+          excerpt: parts[1] || "Latest updates from the field.",
+          content: parts[2] || parts[1] || "",
           category: niche,
           author: "Hub Analysis",
           date: new Date().toLocaleDateString(),
           imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`
         };
       });
-  } catch (error) { return []; }
+  } catch (error) { 
+    console.error("News fetch error:", error);
+    return []; 
+  }
 };
