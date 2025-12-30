@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Header from './components/Header.tsx';
 import Hero from './components/Hero.tsx';
@@ -47,8 +46,9 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Check if we are running in an Elementor iFrame
-  const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true';
+  // Robust check for embedded state
+  const isEmbedded = typeof window !== 'undefined' && 
+    (new URLSearchParams(window.location.search).get('embedded') === 'true' || window.self !== window.top);
 
   useEffect(() => {
     if (currentPage === Page.Admin) return;
@@ -65,28 +65,41 @@ const App: React.FC = () => {
           ...(aiData.status === 'fulfilled' ? aiData.value : [])
         ];
         setNews(combined);
-      } catch (err) { console.error(err); } 
-      finally { setIsLoading(false); }
+      } catch (err) { 
+        console.warn("Content sync partially failed, showing fallback.", err); 
+      } finally { 
+        setIsLoading(false); 
+      }
     };
     loadContent();
   }, [activeNiche, currentPage]);
 
+  // Enhanced resize logic to prevent "Gray Collapsed Screen"
   useLayoutEffect(() => {
     const updateHeight = () => {
       if (!containerRef.current) return;
-      const h = containerRef.current.getBoundingClientRect().height;
-      window.parent.postMessage({ type: 'hol-resize', height: h + 50 }, '*');
+      // Use scrollHeight to capture the full content even if hidden by parent
+      const h = containerRef.current.scrollHeight || containerRef.current.offsetHeight;
+      if (h > 0) {
+        window.parent.postMessage({ type: 'hol-resize', height: h + 40 }, '*');
+      }
     };
-    const observer = new ResizeObserver(() => requestAnimationFrame(updateHeight));
+    
+    const observer = new ResizeObserver(updateHeight);
     if (containerRef.current) observer.observe(containerRef.current);
+    
     updateHeight();
-    const interval = setInterval(updateHeight, 2000);
-    return () => { observer.disconnect(); clearInterval(interval); };
+    const timer = setInterval(updateHeight, 1500); // Periodic check for dynamic content
+    
+    return () => {
+      observer.disconnect();
+      clearInterval(timer);
+    };
   }, [news, isLoading, currentPage]);
 
   if (currentPage === Page.Admin) {
     return (
-      <div ref={containerRef} className="bg-slate-950">
+      <div ref={containerRef} className="bg-slate-950 min-h-screen">
         <div className="sticky top-0 z-[100] bg-slate-900 p-4 border-b border-white/5 flex justify-between items-center">
           <button onClick={() => setCurrentPage(Page.Home)} className="text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
             ← Return to Hub Front
@@ -99,7 +112,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div ref={containerRef} className={`min-h-screen flex flex-col ${isEmbedded ? 'bg-transparent' : 'bg-[#fcfcfd]'}`}>
+    <div ref={containerRef} className={`min-h-[200px] flex flex-col ${isEmbedded ? 'bg-transparent' : 'bg-[#fcfcfd]'}`}>
       {!isEmbedded && <Header activePage={currentPage} setPage={setCurrentPage} />}
       
       <main className="flex-grow">
