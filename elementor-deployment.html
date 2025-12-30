@@ -1,22 +1,37 @@
 <!-- 
-  HUB OF LUCK - STABLE ELEMENTOR WIDGET (v4.0)
-  ===========================================
+  HUB OF LUCK - ADVANCED ELEMENTOR WIDGET (v5.0)
+  ==============================================
+  This version includes diagnostic feedback if the app fails.
 -->
 
-<div id="hol-container" style="width: 100%; min-height: 800px; position: relative; background: #ffffff;">
+<div id="hol-container" style="width: 100%; min-height: 600px; position: relative; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden;">
   
-  <!-- Overlay Loader -->
-  <div id="hol-loader" style="position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff;">
-    <div style="width: 30px; height: 30px; border: 2px solid #f3f3f3; border-top: 2px solid #10b981; border-radius: 50%; animation: hol-spin 1s linear infinite;"></div>
-    <p style="margin-top: 20px; font-family: sans-serif; font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase;">Connecting to Hub...</p>
+  <!-- Diagnostic Overlay -->
+  <div id="hol-overlay" style="position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; transition: opacity 0.5s;">
+    <div id="hol-spinner" style="width: 32px; height: 32px; border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; animation: hol-spin 1s linear infinite;"></div>
+    
+    <div id="hol-status-box" style="margin-top: 24px; text-align: center; font-family: 'Inter', sans-serif; max-width: 300px;">
+      <p id="hol-main-status" style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">Connecting to Hub...</p>
+      <p id="hol-sub-status" style="font-size: 10px; color: #94a3b8; margin-top: 8px; line-height: 1.5;">Handshaking with secure deployment server.</p>
+    </div>
+
+    <!-- Error/Repair Guide (Hidden by default) -->
+    <div id="hol-repair-guide" style="display: none; margin-top: 20px; padding: 20px; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; font-size: 11px; color: #991b1b; text-align: left; max-width: 350px;">
+      <strong style="display: block; margin-bottom: 5px;">How to fix the Gray Screen:</strong>
+      1. Ensure <a href="https://hub-of-luck-app1.vercel.app" target="_blank" style="color:#ef4444; font-weight:bold;">Direct Link</a> works.<br>
+      2. If direct link works, your WordPress is blocking the frame.<br>
+      3. Contact support to update "X-Frame-Options" on Vercel.<br>
+      4. Clear your browser cache and Elementor Regenerate CSS.
+    </div>
   </div>
 
   <!-- The App -->
   <iframe 
-    id="hol-app"
+    id="hol-app-frame"
     src="https://hub-of-luck-app1.vercel.app?embedded=true" 
-    style="width: 100%; height: 1200px; border: none; display: block; opacity: 0; transition: opacity 0.5s;"
+    style="width: 100%; height: 1200px; border: none; display: block; opacity: 0; transition: opacity 0.8s ease;"
     scrolling="no"
+    title="Hub of Luck Intelligence"
   ></iframe>
 </div>
 
@@ -26,29 +41,45 @@
 
 <script>
 (function() {
-  const frame = document.getElementById('hol-app');
-  const loader = document.getElementById('hol-loader');
+  const frame = document.getElementById('hol-app-frame');
+  const overlay = document.getElementById('hol-overlay');
+  const mainStatus = document.getElementById('hol-main-status');
+  const subStatus = document.getElementById('hol-sub-status');
+  const spinner = document.getElementById('hol-spinner');
+  const repairGuide = document.getElementById('hol-repair-guide');
   
-  // Handshake listener
+  let loaded = false;
+
+  // Listen for the "I am ready" signal from the React app
   window.addEventListener('message', function(e) {
     if (e.data.type === 'hol-app-ready') {
-      loader.style.opacity = '0';
+      loaded = true;
+      overlay.style.opacity = '0';
       frame.style.opacity = '1';
-      setTimeout(() => loader.style.display = 'none', 500);
+      setTimeout(() => overlay.style.display = 'none', 500);
     }
     
     if (e.data.type === 'hol-resize') {
       frame.style.height = e.data.height + 'px';
     }
+
+    if (e.data.type === 'hol-error') {
+      mainStatus.innerText = "Deployment Conflict";
+      subStatus.innerText = e.data.message;
+      spinner.style.display = 'none';
+      repairGuide.style.display = 'block';
+    }
   });
 
-  // Fallback reveal after 5 seconds if handshake fails
+  // Fail-safe Timeout
   setTimeout(() => {
-    if (loader.style.display !== 'none') {
-      loader.style.opacity = '0';
-      frame.style.opacity = '1';
-      setTimeout(() => loader.style.display = 'none', 500);
+    if (!loaded) {
+      mainStatus.innerText = "Connection Timed Out";
+      mainStatus.style.color = "#ef4444";
+      subStatus.innerText = "The hub failed to respond within 8 seconds.";
+      spinner.style.display = 'none';
+      repairGuide.style.display = 'block';
     }
-  }, 5000);
+  }, 8000);
 })();
 </script>
