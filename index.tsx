@@ -3,15 +3,12 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
 /**
- * Hub of Luck | Ultra-Stable Entry Point
- * Ensures DOM readiness before React initialization.
+ * Hub of Luck | Stable Entry Point
+ * Mounts the application to the #root element.
  */
-const init = () => {
+const mount = () => {
   const container = document.getElementById('root');
-  if (!container) {
-    console.error("FATAL: Root container #root missing.");
-    return;
-  }
+  if (!container) return;
 
   try {
     const root = createRoot(container);
@@ -21,12 +18,9 @@ const init = () => {
       </React.StrictMode>
     );
   } catch (err) {
-    console.error("React Mounting Error:", err);
+    console.error("Mounting error:", err);
   }
 };
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+// Start mount process
+mount();

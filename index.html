@@ -2,54 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hub of Luck | Leading US Gaming Intelligence & Bonus Portal</title>
-    <meta name="description" content="The ultimate authority for Online Casino bonuses, Sports Betting insights, Lottery results, and Sweepstakes reviews in the US. Professional intelligence for the modern gamer.">
-    <meta name="keywords" content="online casino bonuses, sports betting odds, sweepstakes casino reviews, lottery results, real money gaming, gambling news">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub of Luck | Expert Gaming Intelligence</title>
     
     <script>
+        // Global process variable for the app
         window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --brand-emerald: #10b981;
-            --brand-dark: #0f172a;
-        }
+        :root { --brand-emerald: #10b981; --brand-navy: #0f172a; }
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #fcfcfd; 
-            color: #0f172a;
-            margin: 0; padding: 0; 
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
         }
-        .serif-title { font-family: 'Fraunces', serif; }
-        #root { min-height: 100vh; }
+        .serif-header { font-family: 'Playfair Display', serif; }
         
+        /* Ensure the root is visible by default to prevent gray screen */
+        #root { 
+            min-height: 100vh;
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+        
+        /* Centered loader for the initial mount */
         #root:empty::before {
-            content: '';
-            position: fixed;
-            top: 50%; left: 50%;
-            width: 40px; height: 40px;
-            margin: -20px 0 0 -20px;
-            border: 2px solid rgba(16, 185, 129, 0.1);
-            border-top-color: #10b981;
-            border-radius: 50%;
+            content: ''; 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            width: 40px; 
+            height: 40px;
+            margin: -20px 0 0 -20px; 
+            border: 3px solid #e2e8f0;
+            border-top-color: #10b981; 
+            border-radius: 50%; 
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .seo-text-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
     </style>
 
     <script type="importmap">
@@ -67,6 +66,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx?v=4.0.5"></script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

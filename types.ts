@@ -26,5 +26,22 @@ export enum Page {
   Home = 'home',
   News = 'news',
   Bonuses = 'bonuses',
-  Guides = 'guides'
+  Guides = 'guides',
+  Admin = 'admin'
+}
+
+export interface CloudwaysServer {
+  id: string;
+  label: string;
+  ip: string;
+  status: 'active' | 'inactive';
+  memory: string;
+  cpu: string;
+}
+
+export interface CloudwaysApp {
+  id: string;
+  label: string;
+  app_name: string;
+  server_id: string;
 }

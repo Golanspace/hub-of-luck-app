@@ -1,7 +1,11 @@
 
 import React from 'react';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onAdminClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onAdminClick }) => {
   return (
     <footer className="bg-gray-950 text-gray-400 py-12 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4">
@@ -31,7 +35,7 @@ const Footer: React.FC = () => {
               <li><a href="#" className="hover:text-emerald-500 transition-colors">Legal States Guide</a></li>
               <li><a href="#" className="hover:text-emerald-500 transition-colors">Bonus Finder</a></li>
               <li><a href="#" className="hover:text-emerald-500 transition-colors">How to Play</a></li>
-              <li><a href="#" className="hover:text-emerald-500 transition-colors">Responsible Gaming</a></li>
+              <li><a href="#" className="hover:text-emerald-500 transition-colors text-[10px] font-black uppercase" onClick={(e) => { e.preventDefault(); onAdminClick?.(); }}>[SYS OPS]</a></li>
             </ul>
           </div>
 

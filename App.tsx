@@ -1,171 +1,167 @@
+
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Header from './components/Header.tsx';
 import Hero from './components/Hero.tsx';
 import BonusCard from './components/BonusCard.tsx';
 import NewsFeed from './components/NewsFeed.tsx';
 import Footer from './components/Footer.tsx';
+import AIConsultant from './components/AIConsultant.tsx';
+import CloudwaysAdmin from './components/CloudwaysAdmin.tsx';
 import { Page, NewsArticle, BonusOffer } from './types.ts';
 import { fetchLatestGamingNews } from './services/gemini.ts';
 import { fetchWordPressPosts } from './services/wordpress.ts';
 
 const NICHES = [
-  { id: 'all', label: 'Trending', keywords: 'Gaming' },
+  { id: 'sweeps', label: 'Sweepstakes', keywords: 'Sweepstakes' },
   { id: 'casinos', label: 'Online Casinos', keywords: 'Casinos' },
-  { id: 'sports', label: 'Sports Betting', keywords: 'Sports' },
-  { id: 'lottery', label: 'Lottery', keywords: 'Lottery' },
-  { id: 'sweeps', label: 'Sweepstakes', keywords: 'Sweepstakes' }
+  { id: 'sports', label: 'Sports Betting', keywords: 'Sports' }
 ];
 
 const MOCK_BONUSES: BonusOffer[] = [
   {
     id: '1',
-    brand: 'FanDuel Elite',
-    offer: '$1,000 Risk-Free Play',
-    promoCode: 'HUBVIP',
+    brand: 'Pulsz Casino',
+    offer: '5,000 Free GC + 2.3 SC Welcome Bonus',
+    promoCode: 'HUBLUCK',
     link: '#',
     logo: 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=100&h=100&auto=format&fit=crop',
-    terms: '21+ only. New customers. T&Cs apply.',
+    terms: 'New customers only. 21+. No purchase required.',
     rating: 4.9
   },
   {
     id: '2',
-    brand: 'BetMGM Gold',
-    offer: 'Deposit Match up to $1,500',
+    brand: 'McLuck.com',
+    offer: '7,500 Gold Coins + 5 SC No Deposit',
     promoCode: 'HUBGOLD',
     link: '#',
     logo: 'https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=100&h=100&auto=format&fit=crop',
-    terms: 'Deposit required. NJ/PA/MI/WV only.',
+    terms: 'Available in most US states. Daily login rewards.',
     rating: 4.8
   }
 ];
 
-const AppContent: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
-  const [activeNiche, setActiveNiche] = useState('all');
+const App: React.FC = () => {
+  const [activeNiche, setActiveNiche] = useState('sweeps');
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Check if we are running in an Elementor iFrame
+  const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true';
+
   useEffect(() => {
+    if (currentPage === Page.Admin) return;
     const loadContent = async () => {
       setIsLoading(true);
       const nicheObj = NICHES.find(n => n.id === activeNiche);
-      const [aiData, wpData] = await Promise.allSettled([
-        fetchLatestGamingNews(nicheObj?.keywords || "Gaming"),
-        activeNiche === 'all' ? fetchWordPressPosts() : Promise.resolve([])
-      ]);
-      
-      const combined = [
-        ...(wpData.status === 'fulfilled' ? wpData.value : []),
-        ...(aiData.status === 'fulfilled' ? aiData.value : [])
-      ];
-      setNews(combined);
-      setIsLoading(false);
+      try {
+        const [aiData, wpData] = await Promise.allSettled([
+          fetchLatestGamingNews(nicheObj?.keywords || "Gaming"),
+          fetchWordPressPosts()
+        ]);
+        const combined = [
+          ...(wpData.status === 'fulfilled' ? wpData.value : []),
+          ...(aiData.status === 'fulfilled' ? aiData.value : [])
+        ];
+        setNews(combined);
+      } catch (err) { console.error(err); } 
+      finally { setIsLoading(false); }
     };
     loadContent();
-  }, [activeNiche]);
+  }, [activeNiche, currentPage]);
 
   useLayoutEffect(() => {
-    if (!containerRef.current) return;
     const updateHeight = () => {
-      const h = containerRef.current?.scrollHeight || 0;
-      window.parent.postMessage({ type: 'hol-resize', height: h + 100 }, '*');
+      if (!containerRef.current) return;
+      const h = containerRef.current.getBoundingClientRect().height;
+      window.parent.postMessage({ type: 'hol-resize', height: h + 50 }, '*');
     };
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [news, currentPage, isLoading]);
+    const observer = new ResizeObserver(() => requestAnimationFrame(updateHeight));
+    if (containerRef.current) observer.observe(containerRef.current);
+    updateHeight();
+    const interval = setInterval(updateHeight, 2000);
+    return () => { observer.disconnect(); clearInterval(interval); };
+  }, [news, isLoading, currentPage]);
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case Page.Home:
-        return (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <Hero />
+  if (currentPage === Page.Admin) {
+    return (
+      <div ref={containerRef} className="bg-slate-950">
+        <div className="sticky top-0 z-[100] bg-slate-900 p-4 border-b border-white/5 flex justify-between items-center">
+          <button onClick={() => setCurrentPage(Page.Home)} className="text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
+            ← Return to Hub Front
+          </button>
+          <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Administrator Access Locked</div>
+        </div>
+        <CloudwaysAdmin />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className={`min-h-screen flex flex-col ${isEmbedded ? 'bg-transparent' : 'bg-[#fcfcfd]'}`}>
+      {!isEmbedded && <Header activePage={currentPage} setPage={setCurrentPage} />}
+      
+      <main className="flex-grow">
+        <Hero />
+        
+        <div className="max-w-7xl mx-auto px-4 py-20">
+          <div className="flex flex-col lg:flex-row gap-12">
             
-            {/* SEO Niche Bar */}
-            <div className="sticky top-[80px] z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 py-3 mb-12">
-              <div className="max-w-7xl mx-auto px-4 overflow-x-auto">
-                <div className="flex items-center gap-2 whitespace-nowrap min-w-max">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-4">Explore Niches:</span>
-                  {NICHES.map(niche => (
-                    <button
-                      key={niche.id}
-                      onClick={() => setActiveNiche(niche.id)}
-                      className={`px-5 py-2 rounded-full text-xs font-bold transition-all border ${
-                        activeNiche === niche.id 
-                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-100' 
-                        : 'bg-white border-gray-200 text-gray-500 hover:border-emerald-200 hover:text-emerald-600'
+            <div className="lg:col-span-8 flex-1">
+              <div className="flex items-center justify-between mb-10 border-b border-slate-100 pb-6">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                  Top Verified <span className="text-emerald-600 uppercase italic">Sweeps</span>
+                </h2>
+                <div className="flex gap-2">
+                  {NICHES.map(n => (
+                    <button 
+                      key={n.id} 
+                      onClick={() => setActiveNiche(n.id)}
+                      className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${
+                        activeNiche === n.id ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'
                       }`}
                     >
-                      {niche.label}
+                      {n.label}
                     </button>
                   ))}
                 </div>
               </div>
-            </div>
 
-            <section className="max-w-7xl mx-auto px-4 pb-24">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8">
-                  <div className="mb-10 flex items-center justify-between">
-                    <h2 className="serif-title text-4xl font-black text-gray-900 tracking-tight">
-                      Current <span className="text-emerald-600">Intelligence</span>
-                    </h2>
-                  </div>
-                  <NewsFeed news={news} isLoading={isLoading} />
-                </div>
-                
-                <aside className="lg:col-span-4">
-                  <div className="sticky top-40 space-y-12">
-                    <div>
-                      <h3 className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.25em] mb-8 border-l-4 border-emerald-600 pl-4">Verified Offers</h3>
-                      <div className="space-y-6">
-                        {MOCK_BONUSES.map(bonus => (
-                          <BonusCard key={bonus.id} bonus={bonus} />
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="bg-emerald-900 rounded-2xl p-8 text-white">
-                      <h4 className="font-black text-xl mb-4 italic">The Insider Newsletter</h4>
-                      <p className="text-emerald-100 text-sm mb-6 leading-relaxed">Join 24,000+ industry pros receiving weekly regulatory updates and private bonus codes.</p>
-                      <div className="space-y-3">
-                        <input type="email" placeholder="professional@email.com" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400" />
-                        <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">Join Elite Feed</button>
-                      </div>
-                    </div>
-                  </div>
-                </aside>
+              <div className="space-y-2">
+                {MOCK_BONUSES.map(bonus => (
+                  <BonusCard key={bonus.id} bonus={bonus} />
+                ))}
               </div>
-            </section>
-          </div>
-        );
-      case Page.News:
-        return <div className="max-w-5xl mx-auto px-4 py-16"><NewsFeed news={news} isLoading={isLoading} fullWidth /></div>;
-      case Page.Bonuses:
-        return (
-          <div className="max-w-7xl mx-auto px-4 py-16">
-            <h1 className="serif-title text-6xl font-black mb-16 text-center">Elite Bonus <span className="text-emerald-600">Inventory</span></h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {MOCK_BONUSES.map(bonus => <BonusCard key={bonus.id} bonus={bonus} />)}
+              
+              <div className="mt-24">
+                <h3 className="text-2xl font-black mb-10 flex items-center gap-4">
+                  Industry News
+                  <div className="flex-1 h-px bg-slate-100"></div>
+                </h3>
+                <NewsFeed news={news} isLoading={isLoading} />
+              </div>
             </div>
-          </div>
-        );
-      default:
-        return <div className="py-40 text-center text-gray-400 font-bold uppercase tracking-widest">Expansion in Progress</div>;
-    }
-  };
 
-  return (
-    <div ref={containerRef} className="min-h-screen flex flex-col">
-      <Header activePage={currentPage} setPage={setCurrentPage} />
-      <main className="flex-grow">{renderPage()}</main>
-      <Footer />
+            <aside className="lg:w-80 shrink-0">
+              <div className="sticky top-32 space-y-8">
+                <div className="bg-[#0f172a] text-white p-8 rounded-3xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full"></div>
+                    <h4 className="font-black text-xl mb-4 relative z-10">Hub Intelligence</h4>
+                    <p className="text-slate-400 text-sm mb-8 leading-relaxed">Join 5,000+ gamers getting weekly regulatory updates and private promo codes.</p>
+                    <input type="email" placeholder="Email address" className="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-xl text-[10px] uppercase tracking-widest transition-all">Join Elite Feed</button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+
+      {!isEmbedded && <Footer onAdminClick={() => setCurrentPage(Page.Admin)} />}
+      <AIConsultant />
     </div>
   );
 };
-
-const App: React.FC = () => <AppContent />;
 
 export default App;
