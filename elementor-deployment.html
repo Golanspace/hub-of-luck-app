@@ -1,44 +1,243 @@
 <!-- 
-  HUB OF LUCK - DIRECT DEPLOYMENT (v7.0)
-  ======================================
-  Use this in your Elementor HTML Widget.
+  HUB OF LUCK - NATIVE ELEMENTOR HUB (v9.0)
+  ==========================================
+  This code is SELF-CONTAINED. It does NOT require Vercel.
+  Paste this into an Elementor "HTML" Widget.
 -->
 
-<div id="hol-widget-wrapper" style="width: 100%; min-height: 400px; background: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; overflow: hidden; box-shadow: 0 10px 40px -15px rgba(0,0,0,0.08);">
-  
-  <iframe 
-    id="hol-main-frame"
-    src="https://hub-of-luck-app1.vercel.app?embedded=true" 
-    style="width: 100%; height: 800px; border: none; display: block;"
-    scrolling="no"
-    title="Hub of Luck Intelligence"
-  ></iframe>
-
-  <!-- Fallback Footer (Visible if frame fails) -->
-  <div id="hol-fallback-info" style="display:none; padding: 20px; text-align: center; border-top: 1px solid #f1f5f9; font-family: sans-serif;">
-    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Having trouble viewing the hub?</p>
-    <a href="https://hub-of-luck-app1.vercel.app" target="_blank" style="color: #10b981; font-size: 11px; font-weight: bold; text-decoration: none;">Open Hub in New Tab →</a>
+<div id="hol-app-container" class="hol-app-reset">
+  <div id="hol-mount-point">
+    <!-- Inline Loader (Displays while React boots) -->
+    <div style="padding: 120px 20px; text-align: center; font-family: sans-serif; background: #0f172a; border-radius: 24px; color: white;">
+      <div style="width: 40px; height: 40px; border: 3px solid rgba(16, 185, 129, 0.1); border-top: 3px solid #10b981; border-radius: 50%; display: inline-block; animation: hol-spin 0.8s linear infinite;"></div>
+      <h2 style="margin-top: 24px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; color: #10b981;">Hub Of Luck</h2>
+      <p style="margin-top: 8px; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">Native Intelligence Synchronizing</p>
+    </div>
   </div>
 </div>
 
+<style>
+  @keyframes hol-spin { to { transform: rotate(360deg); } }
+  .hol-app-reset { all: initial; font-family: 'Inter', sans-serif; display: block; width: 100%; }
+  .hol-app-reset * { box-sizing: border-box; }
+</style>
+
+<!-- Dependencies -->
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-(function() {
-  const frame = document.getElementById('hol-main-frame');
-  const wrapper = document.getElementById('hol-widget-wrapper');
-  const fallback = document.getElementById('hol-fallback-info');
-
-  // Handle resizing and height sync
-  window.addEventListener('message', function(e) {
-    if (!e.origin.includes('vercel.app')) return;
-
-    if (e.data.type === 'hol-resize' && e.data.height > 100) {
-      frame.style.height = e.data.height + 'px';
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { emerald: '#10b981', navy: '#0f172a', slate: '#1e293b' }
+        }
+      }
     }
-  });
+  }
+</script>
 
-  // If the frame is still empty after 10 seconds, show the fallback link
-  setTimeout(() => {
-    fallback.style.display = 'block';
-  }, 10000);
-})();
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "htm": "https://esm.sh/htm@3.1.1",
+    "@google/genai": "https://esm.sh/@google/genai@1.34.0"
+  }
+}
+</script>
+
+<script type="module">
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+  import htm from 'htm';
+  import { GoogleGenAI } from '@google/genai';
+
+  const html = htm.bind(React.createElement);
+
+  // --- CONFIGURATION ---
+  const CONFIG = {
+    API_KEY: 'AIzaSyAEt-R_9hF5QPG7S10PEGYOG9f7-Zh6w94', // Embedded API Key
+    WP_URL: 'https://hubofluck.com/wp-json/wp/v2'
+  };
+
+  // --- COMPONENTS ---
+  
+  const BonusCard = ({ brand, offer, code, logo }) => html`
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 mb-6 flex flex-col md:flex-row items-center gap-6 hover:border-brand-emerald transition-all hover:shadow-xl group">
+      <div class="w-20 h-20 bg-slate-50 rounded-2xl p-2 flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform">
+        <img src="${logo}" class="max-w-full h-auto rounded-lg" />
+      </div>
+      <div class="flex-1 text-center md:text-left">
+        <span class="text-[9px] font-black text-brand-emerald uppercase tracking-widest">Verified Offer</span>
+        <h3 class="text-xl font-black text-brand-navy mt-1">${offer}</h3>
+        <p class="text-slate-400 text-xs font-bold mt-1">Exclusive to ${brand}</p>
+      </div>
+      <div class="w-full md:w-auto flex flex-col items-center gap-3">
+        <div class="bg-brand-navy text-white px-6 py-3 rounded-xl font-mono text-sm font-black tracking-widest border border-slate-800">
+          ${code}
+        </div>
+        <button class="bg-brand-emerald hover:bg-emerald-400 text-brand-navy font-black px-8 py-4 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/10">
+          Claim Now
+        </button>
+      </div>
+    </div>
+  `;
+
+  const App = () => {
+    const [news, setNews] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [activeNiche, setActiveNiche] = React.useState('sweeps');
+
+    React.useEffect(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          // 1. Fetch from WordPress
+          const wpRes = await fetch(`${CONFIG.WP_URL}/posts?_embed&per_page=3`);
+          const wpData = await wpRes.json();
+          const articles = wpData.map(p => ({
+            id: p.id,
+            title: p.title.rendered,
+            excerpt: p.excerpt.rendered.replace(/<[^>]*>?/gm, '').substring(0, 120) + '...',
+            category: 'Editorial',
+            image: p._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=400'
+          }));
+
+          // 2. Fetch AI News (Gemini)
+          const ai = new GoogleGenAI({ apiKey: CONFIG.API_KEY });
+          const genRes = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: `Brief headline and summary for latest ${activeNiche} news. Format: Title | Summary`,
+            config: { tools: [{ googleSearch: {} }] }
+          });
+          
+          const aiLines = (genRes.text || "").split('\n').filter(l => l.includes('|')).slice(0, 2);
+          const aiArticles = aiLines.map((line, idx) => {
+            const [t, s] = line.split('|');
+            return {
+              id: `ai-${idx}`,
+              title: (t || "Market Update").trim(),
+              excerpt: (s || "Analysis pending...").trim(),
+              category: 'Intelligence',
+              image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=400'
+            };
+          });
+
+          setNews([...aiArticles, ...articles]);
+        } catch (e) {
+          console.error("Hub Sync Error:", e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }, [activeNiche]);
+
+    return html`
+      <div class="max-w-7xl mx-auto p-4 md:p-10 bg-[#fcfcfd] rounded-[40px] shadow-2xl overflow-hidden text-slate-900 border border-slate-100">
+        
+        <!-- Hero Section -->
+        <div class="bg-brand-navy rounded-[32px] p-8 md:p-16 mb-16 relative overflow-hidden text-white">
+          <div class="absolute top-0 right-0 w-1/2 h-full bg-brand-emerald/10 blur-[100px] rounded-full translate-x-1/2"></div>
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-emerald/10 border border-brand-emerald/20 rounded-full mb-6">
+              <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full animate-pulse"></span>
+              <span class="text-[9px] font-black uppercase tracking-widest text-brand-emerald">Native Market Tracker Active</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black leading-tight mb-6 tracking-tight">
+              Premium <span class="text-brand-emerald italic">Intelligence</span> <br/> Hub for HubofLuck
+            </h1>
+            <p class="text-slate-400 text-lg max-w-xl mb-10 leading-relaxed font-medium">
+              Access real-time Sweepstakes analyses and verified legal sportsbook bonuses directly within our ecosystem.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <button class="bg-brand-emerald hover:bg-emerald-400 text-brand-navy px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20">
+                View All Offers
+              </button>
+              <div class="flex items-center gap-3 ml-4">
+                <div class="flex -space-x-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-800 border-2 border-brand-navy"></div>
+                  <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-brand-navy"></div>
+                  <div class="w-10 h-10 rounded-full bg-slate-600 border-2 border-brand-navy"></div>
+                </div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Trusted by 5k+ Players</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <!-- Main Content -->
+          <div class="lg:col-span-8">
+            <div class="flex items-center justify-between mb-10 border-b border-slate-100 pb-6">
+              <h2 class="text-2xl font-black text-brand-navy tracking-tight uppercase">Featured <span class="text-brand-emerald italic">Bonuses</span></h2>
+              <div class="flex gap-2">
+                ${['sweeps', 'casinos'].map(n => html`
+                  <button 
+                    onClick=${() => setActiveNiche(n)}
+                    class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl transition-all ${activeNiche === n ? 'bg-brand-navy text-white shadow-xl' : 'bg-slate-100 text-slate-400'}"
+                  >
+                    ${n}
+                  </button>
+                `)}
+              </div>
+            </div>
+
+            <${BonusCard} brand="Pulsz" offer="5,000 GC + 2.3 SC FREE" code="HUBLUCK" logo="https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=100" />
+            <${BonusCard} brand="Stake.us" offer="250k GC + $25 Stake Cash" code="STAKEHUB" logo="https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=100" />
+
+            <!-- News Feed -->
+            <div class="mt-20">
+              <h2 class="text-2xl font-black text-brand-navy mb-10 uppercase tracking-tight">Market <span class="text-brand-emerald italic">Pulse</span></h2>
+              ${loading ? html`
+                <div class="space-y-6">
+                  <div class="h-32 bg-slate-100 rounded-3xl animate-pulse"></div>
+                  <div class="h-32 bg-slate-100 rounded-3xl animate-pulse"></div>
+                </div>
+              ` : html`
+                <div class="space-y-10">
+                  ${news.map(n => html`
+                    <div key=${n.id} class="group flex flex-col md:flex-row gap-6 p-4 rounded-[32px] hover:bg-white hover:shadow-2xl transition-all border border-transparent hover:border-slate-100">
+                      <div class="md:w-48 h-32 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
+                        <img src="${n.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      </div>
+                      <div>
+                        <span class="text-[9px] font-black text-brand-emerald uppercase tracking-widest">${n.category}</span>
+                        <h3 class="text-xl font-black text-brand-navy mt-1 group-hover:text-brand-emerald transition-colors">${n.title}</h3>
+                        <p class="text-slate-500 text-sm mt-2 leading-relaxed font-medium">${n.excerpt}</p>
+                      </div>
+                    </div>
+                  `)}
+                </div>
+              `}
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="lg:col-span-4">
+            <div class="bg-brand-navy p-10 rounded-[40px] text-white sticky top-10 shadow-2xl">
+              <div class="w-12 h-12 bg-brand-emerald rounded-2xl flex items-center justify-center text-brand-navy font-black text-2xl mb-6 shadow-lg shadow-emerald-500/20">♣</div>
+              <h4 class="text-2xl font-black mb-4 leading-tight uppercase">Join the <br/> Elite Circle</h4>
+              <p class="text-slate-400 text-sm mb-10 leading-relaxed font-medium">Get real-time regulatory alerts and exclusive no-deposit bonus drops sent to your inbox.</p>
+              <div class="space-y-3">
+                <input type="email" placeholder="email@example.com" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-brand-emerald transition-colors" />
+                <button class="w-full bg-brand-emerald hover:bg-emerald-400 text-brand-navy font-black py-5 rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all">Join Access</button>
+              </div>
+              <p class="text-[9px] text-slate-500 font-bold text-center mt-6 uppercase tracking-widest">21+ | Play Responsibly</p>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    `;
+  };
+
+  const mountPoint = document.getElementById('hol-mount-point');
+  if (mountPoint) {
+    const root = createRoot(mountPoint);
+    root.render(React.createElement(App));
+  }
 </script>

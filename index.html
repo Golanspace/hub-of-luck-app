@@ -3,40 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub of Luck | Native Preview</title>
-    
-    <script>
-        // Configuration for Standalone/Development Mode
-        window.HOL_CONFIG = {
-            API_KEY: '', // Enter key here for local testing
-            MODE: 'standalone'
-        };
-        window.process = { env: { NODE_ENV: 'production', API_KEY: window.HOL_CONFIG.API_KEY } };
-    </script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>Hub of Luck | Standalone Preview</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #fcfcfd; font-family: 'Inter', sans-serif; }
-        #hol-root { min-height: 100vh; }
+        body { margin: 0; padding: 40px; background-color: #f1f5f9; }
     </style>
-
-    <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "@google/genai": "https://esm.sh/@google/genai@1.34.0",
+    "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
   }
 }
 </script>
 </head>
 <body>
-    <div id="hol-root"></div>
+    <!-- The same container that will go into WordPress -->
+    <div id="hol-app-container">
+        <div id="hol-mount-point"></div>
+    </div>
+
+    <!-- For local testing, we just include the same code -->
+    <script type="module">
+        // In local dev, we could fetch elementor-deployment.html or just copy the logic.
+        // For this environment, we refer to the logic in index.tsx
+    </script>
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>
