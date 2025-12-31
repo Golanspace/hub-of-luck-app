@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-// Inject Global Styles to force Montserrat and Hub colors site-wide
 const injectGlobalBranding = () => {
   const link = document.createElement('link');
   link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap';
@@ -12,55 +10,34 @@ const injectGlobalBranding = () => {
 
   const style = document.createElement('style');
   style.textContent = `
-    /* GLOBAL THEME OVERRIDE */
-    :root {
+    /* Scope styles to #root to avoid clashing with WordPress/Elementor */
+    #root {
+      font-family: 'Montserrat', sans-serif;
       --hol-emerald: #10b981;
       --hol-navy: #0f172a;
+      background-color: transparent;
     }
-
-    /* Force font on every single element to clean up old design */
-    html, body, #root, .elementor *, .wp-block-* {
+    
+    #root h1, #root h2, #root h3, #root h4, #root h5, #root h6, #root p, #root span, #root button {
       font-family: 'Montserrat', sans-serif !important;
-      -webkit-font-smoothing: antialiased;
     }
 
-    body { 
-      background-color: #fcfcfd;
-      color: #1e293b;
+    /* Modern Scrollbar for the App area */
+    .hol-custom-scroll::-webkit-scrollbar { width: 6px; }
+    .hol-custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .hol-custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    
+    .animate-fadeIn {
+      animation: holFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
-    /* Selection colors */
-    ::selection {
-      background: rgba(16, 185, 129, 0.2);
-      color: #065f46;
-    }
-
-    /* Custom scrollbar for premium feel */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* Animations */
-    @keyframes fadeIn {
+    @keyframes holFadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeIn {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
+    
+    /* Utility to hide horizontal scroll on mobile containers */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   `;
   document.head.appendChild(style);
 };
