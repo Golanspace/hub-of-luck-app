@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-// Inject Global Styles and enforce Montserrat
-const injectStyles = () => {
+// Inject Global Styles to force Montserrat and Hub colors site-wide
+const injectGlobalBranding = () => {
   const link = document.createElement('link');
   link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap';
   link.rel = 'stylesheet';
@@ -11,38 +12,60 @@ const injectStyles = () => {
 
   const style = document.createElement('style');
   style.textContent = `
-    * {
+    /* GLOBAL THEME OVERRIDE */
+    :root {
+      --hol-emerald: #10b981;
+      --hol-navy: #0f172a;
+    }
+
+    /* Force font on every single element to clean up old design */
+    html, body, #root, .elementor *, .wp-block-* {
       font-family: 'Montserrat', sans-serif !important;
-    }
-    body { 
-      background-color: #f8fafc;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
-    .glass-effect { 
-      backdrop-filter: blur(12px); 
-      background: rgba(255, 255, 255, 0.85); 
+
+    body { 
+      background-color: #fcfcfd;
+      color: #1e293b;
     }
-    .dark-glass { 
-      backdrop-filter: blur(20px); 
-      background: rgba(15, 23, 42, 0.95); 
+
+    /* Selection colors */
+    ::selection {
+      background: rgba(16, 185, 129, 0.2);
+      color: #065f46;
     }
+
+    /* Custom scrollbar for premium feel */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Animation for smooth entrances */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeInUp {
-      animation: fadeInUp 0.6s ease-out forwards;
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
     }
   `;
   document.head.appendChild(style);
 };
 
-injectStyles();
+injectGlobalBranding();
 
 const container = document.getElementById('root');
 if (container) {
