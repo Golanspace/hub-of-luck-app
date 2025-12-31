@@ -36,7 +36,6 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Robust API Key check for browser environment
   const apiKey = (window.process?.env?.API_KEY || '').trim();
   const hasApiKey = apiKey.length > 5;
 
@@ -44,7 +43,7 @@ const App: React.FC = () => {
     (new URLSearchParams(window.location.search).get('embedded') === 'true' || window.self !== window.top);
 
   useEffect(() => {
-    // Immediate handshake with host site
+    // Immediate height report
     if (window.parent) {
       window.parent.postMessage({ type: 'hol-app-ready' }, '*');
     }
@@ -55,21 +54,16 @@ const App: React.FC = () => {
       setIsLoading(true);
       try {
         const wpData = await fetchWordPressPosts();
-        
         if (!hasApiKey) {
           setNews(wpData);
           setIsLoading(false);
           return;
         }
-
         const nicheObj = NICHES.find(n => n.id === activeNiche);
         const aiData = await fetchLatestGamingNews(nicheObj?.keywords || "Gaming");
-        
-        // Prioritize AI News then fallback to WP
-        const combined = [...aiData, ...wpData];
-        setNews(combined.length > 0 ? combined : []);
+        setNews([...aiData, ...wpData]);
       } catch (err) { 
-        console.warn("Content sync failed", err); 
+        console.warn("Sync failed", err); 
       } finally { 
         setIsLoading(false); 
       }
@@ -78,20 +72,25 @@ const App: React.FC = () => {
   }, [activeNiche, currentPage, hasApiKey]);
 
   useLayoutEffect(() => {
-    const updateHeight = () => {
-      if (!containerRef.current || !isEmbedded) return;
-      const h = containerRef.current.scrollHeight;
-      if (h > 0) {
-        window.parent.postMessage({ type: 'hol-resize', height: h }, '*');
+    const reportHeight = () => {
+      if (containerRef.current && isEmbedded) {
+        const height = containerRef.current.scrollHeight;
+        window.parent.postMessage({ type: 'hol-resize', height }, '*');
       }
     };
+
+    const resizeObserver = new ResizeObserver(reportHeight);
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
     
-    const observer = new ResizeObserver(updateHeight);
-    if (containerRef.current) observer.observe(containerRef.current);
-    const timer = setInterval(updateHeight, 1500);
-    
-    return () => { observer.disconnect(); clearInterval(timer); };
-  }, [news, isLoading, currentPage, isEmbedded]);
+    // Fallback interval for the first few seconds
+    const interval = setInterval(reportHeight, 1000);
+    setTimeout(() => clearInterval(interval), 10000);
+
+    return () => {
+      resizeObserver.disconnect();
+      clearInterval(interval);
+    };
+  }, [news, isLoading, isEmbedded, currentPage]);
 
   if (currentPage === Page.Admin) {
     return <div ref={containerRef} className="bg-slate-950 min-h-screen"><CloudwaysAdmin /></div>;
@@ -105,25 +104,14 @@ const App: React.FC = () => {
         <Hero />
         
         <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-          
-          {/* Diagnostic Alert: Only shown if API KEY is missing */}
           {!hasApiKey && (
             <div className="mb-12 p-8 bg-slate-900 border border-emerald-500/30 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
               <div className="flex items-center gap-5">
                 <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 text-xl font-bold animate-pulse">!</div>
                 <div>
-                  <h4 className="text-white font-black text-lg tracking-tight">AI Engine Pending Setup</h4>
-                  <p className="text-slate-400 text-xs uppercase tracking-widest font-bold mt-1">Get your key from <a href="https://aistudio.google.com" target="_blank" className="text-emerald-400 hover:underline">ai.google.dev</a> then add to Vercel</p>
+                  <h4 className="text-white font-black text-lg tracking-tight">AI Systems Offline</h4>
+                  <p className="text-slate-400 text-xs uppercase tracking-widest font-bold mt-1">Configure your API_KEY in Vercel to activate AI news summaries.</p>
                 </div>
-              </div>
-              <div className="flex gap-3">
-                <a 
-                  href="https://vercel.com" 
-                  target="_blank" 
-                  className="bg-emerald-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20"
-                >
-                  Configure Vercel
-                </a>
               </div>
             </div>
           )}
@@ -132,7 +120,7 @@ const App: React.FC = () => {
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4 border-b border-slate-100 pb-6">
                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-                  Verified <span className="text-emerald-600 uppercase italic">Intelligence</span>
+                  Premium <span className="text-emerald-600 uppercase italic">Intelligence</span>
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {NICHES.map(n => (
@@ -164,8 +152,8 @@ const App: React.FC = () => {
                 <div className="bg-[#0f172a] text-white p-10 rounded-[32px] sticky top-32 shadow-2xl border border-white/5">
                     <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg shadow-emerald-500/20">♣</div>
                     <h4 className="font-black text-2xl mb-4 leading-tight">Elite Legal Tracking</h4>
-                    <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium">Get the industry's only real-time legal status monitor for all 50 states.</p>
-                    <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-5 rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all transform active:scale-95">Upgrade To Elite</button>
+                    <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium">Real-time status monitor for US regulated markets.</p>
+                    <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-5 rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all">Join Elite</button>
                 </div>
             </aside>
           </div>

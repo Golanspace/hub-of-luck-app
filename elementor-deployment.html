@@ -1,85 +1,44 @@
 <!-- 
-  HUB OF LUCK - ADVANCED ELEMENTOR WIDGET (v5.0)
-  ==============================================
-  This version includes diagnostic feedback if the app fails.
+  HUB OF LUCK - DIRECT DEPLOYMENT (v7.0)
+  ======================================
+  Use this in your Elementor HTML Widget.
 -->
 
-<div id="hol-container" style="width: 100%; min-height: 600px; position: relative; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden;">
+<div id="hol-widget-wrapper" style="width: 100%; min-height: 400px; background: #ffffff; border-radius: 20px; border: 1px solid #f1f5f9; overflow: hidden; box-shadow: 0 10px 40px -15px rgba(0,0,0,0.08);">
   
-  <!-- Diagnostic Overlay -->
-  <div id="hol-overlay" style="position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; transition: opacity 0.5s;">
-    <div id="hol-spinner" style="width: 32px; height: 32px; border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; animation: hol-spin 1s linear infinite;"></div>
-    
-    <div id="hol-status-box" style="margin-top: 24px; text-align: center; font-family: 'Inter', sans-serif; max-width: 300px;">
-      <p id="hol-main-status" style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">Connecting to Hub...</p>
-      <p id="hol-sub-status" style="font-size: 10px; color: #94a3b8; margin-top: 8px; line-height: 1.5;">Handshaking with secure deployment server.</p>
-    </div>
-
-    <!-- Error/Repair Guide (Hidden by default) -->
-    <div id="hol-repair-guide" style="display: none; margin-top: 20px; padding: 20px; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; font-size: 11px; color: #991b1b; text-align: left; max-width: 350px;">
-      <strong style="display: block; margin-bottom: 5px;">How to fix the Gray Screen:</strong>
-      1. Ensure <a href="https://hub-of-luck-app1.vercel.app" target="_blank" style="color:#ef4444; font-weight:bold;">Direct Link</a> works.<br>
-      2. If direct link works, your WordPress is blocking the frame.<br>
-      3. Contact support to update "X-Frame-Options" on Vercel.<br>
-      4. Clear your browser cache and Elementor Regenerate CSS.
-    </div>
-  </div>
-
-  <!-- The App -->
   <iframe 
-    id="hol-app-frame"
+    id="hol-main-frame"
     src="https://hub-of-luck-app1.vercel.app?embedded=true" 
-    style="width: 100%; height: 1200px; border: none; display: block; opacity: 0; transition: opacity 0.8s ease;"
+    style="width: 100%; height: 800px; border: none; display: block;"
     scrolling="no"
     title="Hub of Luck Intelligence"
   ></iframe>
-</div>
 
-<style>
-  @keyframes hol-spin { to { transform: rotate(360deg); } }
-</style>
+  <!-- Fallback Footer (Visible if frame fails) -->
+  <div id="hol-fallback-info" style="display:none; padding: 20px; text-align: center; border-top: 1px solid #f1f5f9; font-family: sans-serif;">
+    <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Having trouble viewing the hub?</p>
+    <a href="https://hub-of-luck-app1.vercel.app" target="_blank" style="color: #10b981; font-size: 11px; font-weight: bold; text-decoration: none;">Open Hub in New Tab →</a>
+  </div>
+</div>
 
 <script>
 (function() {
-  const frame = document.getElementById('hol-app-frame');
-  const overlay = document.getElementById('hol-overlay');
-  const mainStatus = document.getElementById('hol-main-status');
-  const subStatus = document.getElementById('hol-sub-status');
-  const spinner = document.getElementById('hol-spinner');
-  const repairGuide = document.getElementById('hol-repair-guide');
-  
-  let loaded = false;
+  const frame = document.getElementById('hol-main-frame');
+  const wrapper = document.getElementById('hol-widget-wrapper');
+  const fallback = document.getElementById('hol-fallback-info');
 
-  // Listen for the "I am ready" signal from the React app
+  // Handle resizing and height sync
   window.addEventListener('message', function(e) {
-    if (e.data.type === 'hol-app-ready') {
-      loaded = true;
-      overlay.style.opacity = '0';
-      frame.style.opacity = '1';
-      setTimeout(() => overlay.style.display = 'none', 500);
-    }
-    
-    if (e.data.type === 'hol-resize') {
-      frame.style.height = e.data.height + 'px';
-    }
+    if (!e.origin.includes('vercel.app')) return;
 
-    if (e.data.type === 'hol-error') {
-      mainStatus.innerText = "Deployment Conflict";
-      subStatus.innerText = e.data.message;
-      spinner.style.display = 'none';
-      repairGuide.style.display = 'block';
+    if (e.data.type === 'hol-resize' && e.data.height > 100) {
+      frame.style.height = e.data.height + 'px';
     }
   });
 
-  // Fail-safe Timeout
+  // If the frame is still empty after 10 seconds, show the fallback link
   setTimeout(() => {
-    if (!loaded) {
-      mainStatus.innerText = "Connection Timed Out";
-      mainStatus.style.color = "#ef4444";
-      subStatus.innerText = "The hub failed to respond within 8 seconds.";
-      spinner.style.display = 'none';
-      repairGuide.style.display = 'block';
-    }
-  }, 8000);
+    fallback.style.display = 'block';
+  }, 10000);
 })();
 </script>

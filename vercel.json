@@ -9,7 +9,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://hubofluck.com https://www.hubofluck.com https://*.hubofluck.com https://*.elementor.cloud"
+          "value": "frame-ancestors 'self' https://*hubofluck.com https://*.elementor.cloud"
         },
         {
           "key": "X-Frame-Options",

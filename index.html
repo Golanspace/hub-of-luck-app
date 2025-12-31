@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub of Luck | Expert Gaming Intelligence</title>
+    <title>Hub of Luck | Intelligence Platform</title>
     
     <script>
-        // Setup environment before anything else loads
-        window.process = { 
-            env: { 
-                NODE_ENV: 'production',
-                API_KEY: '' 
-            } 
-        };
-        console.log("System: Environment Stub Initialized.");
-
-        // Force signal to parent WordPress site that the frame is ready to be shown
-        // This prevents the 'forever gray' look if a script error happens later
-        setTimeout(() => {
-            if (window.parent && window.parent !== window) {
-                console.log("System: Sending manual ready signal to host.");
-                window.parent.postMessage({ type: 'hol-app-ready' }, '*');
-            }
-        }, 3000);
+        // Set environment variables before any modules load
+        window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
+        
+        // Log to console for debugging
+        console.log("HUB_OF_LUCK: Booting v7.0 (Resilient)...");
 
         window.onerror = function(msg, url, line, col, error) {
-            console.error('Boot Error:', msg, error);
+            console.error('[CRITICAL BOOT ERROR]:', msg, error);
+            // If the app crashes, we want to at least notify the user
+            const root = document.getElementById('root');
+            if (root) {
+                root.innerHTML = `<div style="padding:40px; font-family:sans-serif; text-align:center;">
+                    <h3 style="color:#ef4444;">Connection Conflict</h3>
+                    <p style="color:#64748b; font-size:13px;">A browser module conflict prevented the hub from starting.</p>
+                    <button onclick="window.location.reload()" style="background:#10b981; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px;">Retry Connection</button>
+                </div>`;
+            }
             return false;
         };
     </script>
@@ -37,8 +34,11 @@
     
     <style>
         :root { --brand-emerald: #10b981; --brand-navy: #0f172a; }
-        html, body { height: 100%; margin: 0; padding: 0; background-color: transparent; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
         #root { min-height: 100vh; display: flex; flex-direction: column; background-color: #fcfcfd; }
+        
+        @keyframes pulse-emerald { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .heartbeat { animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 
     <script type="importmap">
@@ -56,9 +56,9 @@
 </head>
 <body>
     <div id="root">
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; background:#ffffff;">
-            <div style="width: 28px; height: 28px; border: 3px solid #f1f5f9; border-top: 3px solid #10b981; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-            <p style="color:#94a3b8; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:4px; margin-top: 24px;">Synchronizing Hub</p>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:white;">
+            <div style="width: 20px; height: 20px; border: 2px solid #f1f5f9; border-top: 2px solid #10b981; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <p style="color:#94a3b8; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:4px; margin-top: 24px;" class="heartbeat">Syncing Intelligence</p>
         </div>
     </div>
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
