@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { NewsArticle } from "../types.ts";
 
@@ -6,16 +7,6 @@ export interface IntelligenceResponse {
   webLinks: { uri: string; title: string }[];
   functionCalls?: any[];
 }
-
-// Strictly retrieve the API Key
-const getApiKey = () => {
-    try {
-        const key = (window.process?.env?.API_KEY || '').trim();
-        return key;
-    } catch (e) {
-        return '';
-    }
-};
 
 const cloudwaysTools: FunctionDeclaration[] = [
   {
@@ -33,22 +24,22 @@ const cloudwaysTools: FunctionDeclaration[] = [
 ];
 
 export const consultIntelligence = async (query: string): Promise<IntelligenceResponse> => {
-  const apiKey = getApiKey();
+  const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    return { text: "The AI Hub is currently offline. Please add a valid API_KEY to your deployment environment variables.", webLinks: [] };
+    return { text: "The AI Hub is currently offline. Please ensure the API_KEY environment variable is set.", webLinks: [] };
   }
 
   try {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `You are the Hub of Luck System Architect. Analyze: ${query}`,
+      contents: `You are the Hub of Luck Senior Intelligence Analyst. Provide a detailed, professional breakdown of: ${query}. Focus on legal status, recent movements, and expert consensus.`,
       config: {
         tools: [{ googleSearch: {} }, { functionDeclarations: cloudwaysTools }],
       },
     });
 
-    const text = response.text || "Analysis complete.";
+    const text = response.text || "No analysis available.";
     const webLinks = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || [])
       .filter((chunk: any) => chunk && chunk.web)
       .map((chunk: any) => ({
@@ -59,23 +50,32 @@ export const consultIntelligence = async (query: string): Promise<IntelligenceRe
     return { text, webLinks, functionCalls: response.functionCalls };
   } catch (error) {
     console.error("Consultation System Error:", error);
-    return { text: "Intelligence hub encountered a processing error. Please check API quota or logs.", webLinks: [] };
+    return { text: "Intelligence hub encountered a processing error. Please check connectivity.", webLinks: [] };
   }
 };
 
 export const fetchLatestGamingNews = async (niche: string = "Gaming"): Promise<NewsArticle[]> => {
-  const apiKey = getApiKey();
+  const apiKey = process.env.API_KEY;
   if (!apiKey) return [];
   
   try {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Search for trending ${niche} news. Return 5 summaries formatted: Headline | Tagline | Content`,
-      config: { tools: [{ googleSearch: {} }] },
+      contents: `Find the absolute latest, breaking news for the US ${niche} industry. Return 5 summaries. FORMAT EACH ON ONE LINE: Headline | Tagline | Content`,
+      config: { 
+        tools: [{ googleSearch: {} }] 
+      },
     });
     
     const text = response.text || "";
+    const webLinks = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || [])
+      .filter((chunk: any) => chunk && chunk.web)
+      .map((chunk: any) => ({
+        uri: chunk.web.uri,
+        title: chunk.web.title || chunk.web.uri
+      }));
+
     return text.split('\n')
       .filter(line => line.includes('|'))
       .map((line, idx) => {
@@ -87,8 +87,9 @@ export const fetchLatestGamingNews = async (niche: string = "Gaming"): Promise<N
           content: parts[2] || parts[1] || "",
           category: niche,
           author: "Hub Intelligence",
-          date: new Date().toLocaleDateString(),
-          imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          imageUrl: `https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800&sig=${idx}`,
+          sources: webLinks.slice(idx, idx + 2) // Distribute links
         };
       });
   } catch (error) { 

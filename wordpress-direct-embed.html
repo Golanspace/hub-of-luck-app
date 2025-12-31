@@ -1,3 +1,4 @@
+
 <!-- 
   HUB OF LUCK - NATIVE INTEGRATION (v8.0)
   ======================================
@@ -7,7 +8,7 @@
 
 <div id="hol-root">
   <!-- Loading Placeholder -->
-  <div style="padding: 100px 20px; text-align: center; font-family: sans-serif; background: #fff; border-radius: 20px; border: 1px solid #f1f5f9;">
+  <div style="padding: 100px 20px; text-align: center; font-family: 'Montserrat', sans-serif; background: #fff; border-radius: 20px; border: 1px solid #f1f5f9;">
     <div style="width: 24px; height: 24px; border: 2px solid #f3f3f3; border-top: 2px solid #10b981; border-radius: 50%; display: inline-block; animation: hol-spin 0.8s linear infinite;"></div>
     <p style="margin-top: 20px; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px;">Initializing Intelligence Hub</p>
   </div>
@@ -17,6 +18,7 @@
   @keyframes hol-spin { to { transform: rotate(360deg); } }
   /* Ensure Tailwind from the app doesn't break your site's header */
   #hol-root img { display: inline-block; }
+  body { font-family: 'Montserrat', sans-serif !important; }
 </style>
 
 <script>
@@ -29,7 +31,19 @@
 
 <!-- Load Tailwind & External Styles -->
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Montserrat', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
 
 <!-- Module Support -->
 <script type="importmap">
@@ -52,7 +66,7 @@
     const root = document.getElementById('hol-root');
     if (root && root.innerHTML.includes('Initializing')) {
       root.innerHTML = `
-        <div style="padding:40px; text-align:center; font-family:sans-serif;">
+        <div style="padding:40px; text-align:center; font-family:'Montserrat', sans-serif;">
           <h3 style="color:#ef4444;">Connection Timeout</h3>
           <p style="color:#64748b; font-size:13px;">The hub could not load the remote script. Please check your browser console for Module errors.</p>
           <a href="https://hub-of-luck-app1.vercel.app" target="_blank" style="color:#10b981; font-weight:bold; text-decoration:none;">Open Direct Link</a>

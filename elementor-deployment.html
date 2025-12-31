@@ -1,3 +1,4 @@
+
 <!-- 
   HUB OF LUCK - NATIVE ELEMENTOR HUB (v10.0)
   ==========================================
@@ -7,7 +8,7 @@
 <div id="hol-app-container" class="hol-app-reset">
   <div id="hol-mount-point">
     <!-- Inline Loader -->
-    <div style="padding: 120px 20px; text-align: center; font-family: sans-serif; background: #0f172a; border-radius: 24px; color: white;">
+    <div style="padding: 120px 20px; text-align: center; font-family: 'Montserrat', sans-serif; background: #0f172a; border-radius: 24px; color: white;">
       <div style="width: 40px; height: 40px; border: 3px solid rgba(16, 185, 129, 0.1); border-top: 3px solid #10b981; border-radius: 50%; display: inline-block; animation: hol-spin 0.8s linear infinite;"></div>
       <h2 style="margin-top: 24px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; color: #10b981;">Hub Of Luck</h2>
       <p style="margin-top: 8px; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">Synchronizing Native Intelligence</p>
@@ -17,7 +18,7 @@
 
 <style>
   @keyframes hol-spin { to { transform: rotate(360deg); } }
-  .hol-app-reset { all: initial; font-family: 'Inter', sans-serif; display: block; width: 100%; background: #fcfcfd; }
+  .hol-app-reset { all: initial; font-family: 'Montserrat', sans-serif; display: block; width: 100%; background: #fcfcfd; }
   .hol-app-reset * { box-sizing: border-box; }
   .hol-no-scrollbar::-webkit-scrollbar { display: none; }
   .hol-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -29,6 +30,9 @@
   tailwind.config = {
     theme: {
       extend: {
+        fontFamily: {
+          sans: ['Montserrat', 'sans-serif'],
+        },
         colors: {
           brand: { emerald: '#10b981', navy: '#0f172a', slate: '#1e293b' }
         }
@@ -36,6 +40,8 @@
     }
   }
 </script>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 <script type="importmap">
 {
