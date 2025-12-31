@@ -3,42 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub of Luck | Intelligence Platform</title>
+    <title>Hub of Luck | Native Preview</title>
     
     <script>
-        // Set environment variables before any modules load
-        window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
-        
-        // Log to console for debugging
-        console.log("HUB_OF_LUCK: Booting v7.0 (Resilient)...");
-
-        window.onerror = function(msg, url, line, col, error) {
-            console.error('[CRITICAL BOOT ERROR]:', msg, error);
-            // If the app crashes, we want to at least notify the user
-            const root = document.getElementById('root');
-            if (root) {
-                root.innerHTML = `<div style="padding:40px; font-family:sans-serif; text-align:center;">
-                    <h3 style="color:#ef4444;">Connection Conflict</h3>
-                    <p style="color:#64748b; font-size:13px;">A browser module conflict prevented the hub from starting.</p>
-                    <button onclick="window.location.reload()" style="background:#10b981; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px;">Retry Connection</button>
-                </div>`;
-            }
-            return false;
+        // Configuration for Standalone/Development Mode
+        window.HOL_CONFIG = {
+            API_KEY: '', // Enter key here for local testing
+            MODE: 'standalone'
         };
+        window.process = { env: { NODE_ENV: 'production', API_KEY: window.HOL_CONFIG.API_KEY } };
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --brand-emerald: #10b981; --brand-navy: #0f172a; }
-        html, body { height: 100%; margin: 0; padding: 0; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
-        #root { min-height: 100vh; display: flex; flex-direction: column; background-color: #fcfcfd; }
-        
-        @keyframes pulse-emerald { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .heartbeat { animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        body { margin: 0; padding: 0; background-color: #fcfcfd; font-family: 'Inter', sans-serif; }
+        #hol-root { min-height: 100vh; }
     </style>
 
     <script type="importmap">
@@ -55,13 +36,7 @@
 </script>
 </head>
 <body>
-    <div id="root">
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:white;">
-            <div style="width: 20px; height: 20px; border: 2px solid #f1f5f9; border-top: 2px solid #10b981; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-            <p style="color:#94a3b8; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:4px; margin-top: 24px;" class="heartbeat">Syncing Intelligence</p>
-        </div>
-    </div>
-    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    <div id="hol-root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>

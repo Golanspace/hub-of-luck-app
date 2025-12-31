@@ -2,17 +2,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-console.log("HUB_OF_LUCK: Runtime initialized.");
+// Use a unique ID to ensure no conflict with WordPress themes
+const container = document.getElementById('hol-root') || document.getElementById('root');
 
-const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
   root.render(<App />);
-  
-  // Send ready signal after a short delay to ensure React is painting
-  setTimeout(() => {
-    if (window.parent) {
-      window.parent.postMessage({ type: 'hol-app-ready' }, '*');
-    }
-  }, 500);
+  console.log("HUB_OF_LUCK: Native App Mounted.");
+} else {
+  console.error("HUB_OF_LUCK: Could not find mount point #hol-root");
 }
